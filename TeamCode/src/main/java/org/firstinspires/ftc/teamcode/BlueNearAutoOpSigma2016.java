@@ -106,7 +106,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
     static final double WALL_APPROACHING_SPEED = 0.6;
     static final double P_WALL_APPROACHING_COEFF = 0.05;
 
-    static final double LINE_DETECTION_SPEED = 0.15;
+    static final double LINE_DETECTION_SPEED = 0.13;
     static final double WALL_TRAVELING_SPEED = 0.5;
     static final double P_WALL_TRACKING_COEFF_FINE = 0.025;// Larger is more responsive, but also less stable
     static final double P_WALL_TRACKING_COEFF_COARSE = 0.05;// Larger is more responsive, but also less stable
@@ -219,7 +219,13 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         /* ------ ultrasonic wall tracker + white line detection ------- */
         // Drive forward to align with the wall and park at far line
-        WallTrackingToWhiteLine(0.4, 80, true);
+        WallTrackingToWhiteLine(0.4, 14, false);
+        StopAllMotion();
+        if (!opModeIsActive()) {
+            return;
+        }
+
+        WallTrackingToWhiteLine(0.3, 40, true);
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -240,20 +246,21 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         // Drive backward to detect the near line
         // pass the current white line without line detection
-        WallTrackingToWhiteLine(0.5, -40.0, false);
+        WallTrackingToWhiteLine(0.5, -35.0, false);
+        StopAllMotion();
         if (!opModeIsActive()) {
             StopAllMotion();
             return;
         }
 
         // detect the near white line
-        WallTrackingToWhiteLine(0.5, -18.0, true);
+        WallTrackingToWhiteLine(0.2, -23.0, true);
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
         }
 
-        WallTrackingToWhiteLine(LINE_DETECTION_SPEED, 18.0, true);
+        WallTrackingToWhiteLine(0.1, 18.0, true);
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -267,13 +274,13 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         /*------ drive to the center vortex ------*/
-        gyroDrive(DRIVE_SPEED, 30.00, 30.0); // 30 degree
+        gyroDrive(DRIVE_SPEED, 35.00, 50.0); // 30 degree
         if (!opModeIsActive()) {
             StopAllMotion();
             return;
         }
 
-        gyroTurn(TURN_SPEED, -120, P_TURN_COEFF); // turn to 90 degree
+        gyroTurn(TURN_SPEED, -110, P_TURN_COEFF); // turn to 90 degree
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -293,8 +300,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         sleep(800);
         StopAllMotion();
 
-        gyroTurn(TURN_SPEED, -35, P_TURN_COEFF);  // -35 degree
-        gyroDrive(DRIVE_SPEED, -41, -35);         // -35 degree, 41 inch
+        gyroTurn(TURN_SPEED, -40, P_TURN_COEFF);  // -40 degree
+        gyroDrive(DRIVE_SPEED, -41, -40);         // -40 degree, 41 inch
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -884,7 +891,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                 // adjust angle pointing based on ultrasound reading.
                 if (Math.abs(error) >= 2) {
                     // distance off by more than 2. Need steep 10 degree angle driving back to expected distance
-                    targetAngleOffset = 0.0 - Math.signum(distance) * Math.signum(error) * 5.0;
+                    targetAngleOffset = 0.0 - Math.signum(distance) * Math.signum(error) * 4.0;
 
                     angleSteer = targetAngleOffset - angleOffset;
 

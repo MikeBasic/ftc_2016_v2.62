@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RedNearAutoOpSigma2016.GROUND_BRIGHTNESS_AVERAGE;
-
 public class ReadSensorsSigma2016 extends Thread {
 
     boolean bReadCenterLightSensor = false;
