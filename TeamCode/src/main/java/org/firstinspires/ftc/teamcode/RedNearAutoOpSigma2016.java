@@ -99,20 +99,20 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
     static final double TURN_SPEED = 0.25;     // Nominal half speed for better accuracy.
     static final double TURN_THRESHOLD = 2;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.05;     // Larger is more responsive, but also less stable
-    static final double MIN_TURN_SPEED = 0.15;     // Larger is more responsive, but also less stable with over turn
+    static final double MIN_TURN_SPEED = 0.2;     // Larger is more responsive, but also less stable with over turn
 
     static final double maxLeftRightSpeedDifferentialAtDrive = 0.5;
 
     static final double WALL_APPROACHING_SPEED = 0.6;
     static final double P_WALL_APPROACHING_COEFF = 0.05;
 
-    static final double LINE_DETECTION_SPEED = 0.13;
+    static final double LINE_DETECTION_SPEED = 0.18;
     static final double WALL_TRAVELING_SPEED = 0.5;
     static final double P_WALL_TRACKING_COEFF_FINE = 0.025;// Larger is more responsive, but also less stable
     static final double P_WALL_TRACKING_COEFF_COARSE = 0.05;// Larger is more responsive, but also less stable
 
-    static final double TARGET_WALL_DISTANCE_FORWARD = 6;  // ultrasound sensor reading for x inch away from wall
-    static final double TARGET_WALL_DISTANCE_BACKWARD = 7;
+    static final double TARGET_WALL_DISTANCE_FORWARD = 7;  // ultrasound sensor reading for x inch away from wall
+    static final double TARGET_WALL_DISTANCE_BACKWARD = 8;
 
     static final int ENCODER_TARGET_THRESHOLD = 10;
 
@@ -183,7 +183,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
-        gyroDrive(DRIVE_SPEED, -80, 42.0); // Drive BWD 63 inches
+        gyroDrive(DRIVE_SPEED, -79, 45.0); // Drive BWD 63 inches
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -219,19 +219,25 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
 
         /* ------ ultrasonic wall tracker + white line detection ------- */
         // Drive forward to align with the wall and park at far line
-        WallTrackingToWhiteLine(0.4, -12, false);
+//        WallTrackingToWhiteLine(0.4, -12, false);4
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            return;
+//        }
+
+        WallTrackingToWhiteLine(0.25, -52, true);
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
         }
 
-        WallTrackingToWhiteLine(0.3, -40, true);
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            return;
-        }
+//        gyroDrive(0.2, -1, 0);
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            return;
+//        }
 
-        WallTrackingToWhiteLine(LINE_DETECTION_SPEED, 18, true);
+        WallTrackingToWhiteLine(0.135, 18, true);
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -260,7 +266,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
             return;
         }
 
-        WallTrackingToWhiteLine(0.1, -18.0, true);
+        WallTrackingToWhiteLine(0.135, -18.0, true);
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -274,13 +280,13 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         /*------ drive to the center vortex ------*/
-        gyroDrive(DRIVE_SPEED, -48.00, -65.0); // -50 degree
+        gyroDrive(DRIVE_SPEED, -40.00, -65.0); // -50 degree
         if (!opModeIsActive()) {
             StopAllMotion();
             return;
         }
 
-        gyroTurn(TURN_SPEED, 153, P_TURN_COEFF); // turn to 90 degree
+        gyroTurn(TURN_SPEED, 150, P_TURN_COEFF); // turn to 90 degree
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -300,12 +306,12 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         sleep(800);
         StopAllMotion();
 
-        gyroTurn(TURN_SPEED, 40, P_TURN_COEFF);  // -40 degree
-        gyroDrive(DRIVE_SPEED, 41, 40);         // -40 degree, 41 inch
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            return;
-        }
+//        gyroTurn(TURN_SPEED, 40, P_TURN_COEFF);  // -40 degree
+//        gyroDrive(DRIVE_SPEED, 41, 40);         // -40 degree, 41 inch
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            return;
+//        }
 
         // Finally, stop
         StopAllMotion();

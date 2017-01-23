@@ -99,7 +99,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
     static final double TURN_SPEED = 0.25;     // Nominal half speed for better accuracy.
     static final double TURN_THRESHOLD = 2;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.05;     // Larger is more responsive, but also less stable
-    static final double MIN_TURN_SPEED = 0.15;     // Larger is more responsive, but also less stable with over turn
+    static final double MIN_TURN_SPEED = 0.2;     // Larger is more responsive, but also less stable with over turn
 
     static final double maxLeftRightSpeedDifferentialAtDrive = 0.5;
 
@@ -183,7 +183,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
-        gyroDrive(DRIVE_SPEED, 80, -42.0);// Drive FWD 81 inches along -50 degree
+        gyroDrive(DRIVE_SPEED, 79, -45.0);// Drive FWD 81 inches along -50 degree
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -219,13 +219,13 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         /* ------ ultrasonic wall tracker + white line detection ------- */
         // Drive forward to align with the wall and park at far line
-        WallTrackingToWhiteLine(0.4, 14, false);
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            return;
-        }
+//        WallTrackingToWhiteLine(0.4, 14, false);
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            return;
+//        }
 
-        WallTrackingToWhiteLine(0.3, 40, true);
+        WallTrackingToWhiteLine(0.25, 54, true);
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -260,7 +260,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             return;
         }
 
-        WallTrackingToWhiteLine(0.1, 18.0, true);
+        WallTrackingToWhiteLine(0.13 , 18.0, true);
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -280,7 +280,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             return;
         }
 
-        gyroTurn(TURN_SPEED, -110, P_TURN_COEFF); // turn to 90 degree
+        gyroTurn(TURN_SPEED, -120, P_TURN_COEFF); // turn to 90 degree
         StopAllMotion();
         if (!opModeIsActive()) {
             return;
@@ -300,15 +300,15 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         sleep(800);
         StopAllMotion();
 
-        gyroTurn(TURN_SPEED, -40, P_TURN_COEFF);  // -40 degree
-        gyroDrive(DRIVE_SPEED, -41, -40);         // -40 degree, 41 inch
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            return;
-        }
+//        gyroTurn(TURN_SPEED, -40, P_TURN_COEFF);  // -40 degree
+//        gyroDrive(DRIVE_SPEED, -41, -40);         // -40 degree, 41 inch
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            return;
+//        }
 
         // Finally, stop
-        StopAllMotion();
+//        StopAllMotion();
     }
 
     /**
