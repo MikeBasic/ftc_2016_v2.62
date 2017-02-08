@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -28,8 +29,11 @@ public class HardwareSigma2016
     public int groundbrightnessAVG = 0;
     public final double CENTER_LIGHT_THRESH = 3.0;
 
-    public int centerLightSensorLevel = 0;
-    public int centerLightSensorLevelMax = 0;
+    // speed
+    public double targetAngleSpeed = 0;
+    public double targetSpeed = 0;
+    public double currentAngleSpeed = 0;
+    public double currentSpeed = 0;
 
     /* Public OpMode members. */
     public DcMotor  backLeftMotor = null;
@@ -50,6 +54,10 @@ public class HardwareSigma2016
     public static final double PUSHER_L_OUT  =  0.0 ;
     public static final double PUSHER_R_OUT  =  1.0 ;
     public static final double PUSHER_STOP = 0.5;
+
+    public static final int ENCODER_TARGET_THRESHOLD = 10;
+
+    ModernRoboticsI2cGyro gyro = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -92,6 +100,9 @@ public class HardwareSigma2016
         Thread.sleep(1300);
         pusherL.setPosition(PUSHER_STOP);
         pusherR.setPosition(PUSHER_STOP);
+
+        // gyro
+        gyro = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("gyro");
 
         // light sensor on the robot bottom
         lineLightSensor = hwMap.colorSensor.get("line_light");
