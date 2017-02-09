@@ -36,10 +36,10 @@ public class HardwareSigma2016
     public double currentSpeed = 0;
 
     /* Public OpMode members. */
-    public DcMotor  backLeftMotor = null;
-    public DcMotor  backRightMotor = null;
-    public DcMotor  frontLeftMotor = null;
-    public DcMotor  frontRightMotor = null;
+    public DcMotor  LeftMotor = null;
+    public DcMotor  RightMotor = null;
+//    public DcMotor  frontLeftMotor = null;
+//    public DcMotor  frontRightMotor = null;
     public DcMotor  flicker = null;
     public DcMotor  intake = null;
     public Servo    pusherL    = null;
@@ -73,24 +73,24 @@ public class HardwareSigma2016
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        frontLeftMotor = hwMap.dcMotor.get("motor_2");
-        frontRightMotor  = hwMap.dcMotor.get("motor_3");
-        backLeftMotor  = hwMap.dcMotor.get("motor_1");
-        backRightMotor = hwMap.dcMotor.get("motor_4");
+        LeftMotor = hwMap.dcMotor.get("motor_2");
+        RightMotor  = hwMap.dcMotor.get("motor_3");
+//        backLeftMotor  = hwMap.dcMotor.get("motor_1");
+//        backRightMotor = hwMap.dcMotor.get("motor_4");
 
         flicker = hwMap.dcMotor.get("flicker");
         intake = hwMap.dcMotor.get("intake");
 
-        frontLeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        LeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        RightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+//        backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
+//        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Set all motors to zero power
-        backRightMotor.setPower(0);
-        backLeftMotor.setPower(0);
-        frontLeftMotor.setPower(0);
-        frontRightMotor.setPower(0);
+        RightMotor.setPower(0);
+        LeftMotor.setPower(0);
+//        frontLeftMotor.setPower(0);
+//        frontRightMotor.setPower(0);
 
         // Define and initialize ALL installed servos.
         pusherL = hwMap.servo.get("pusher_l");

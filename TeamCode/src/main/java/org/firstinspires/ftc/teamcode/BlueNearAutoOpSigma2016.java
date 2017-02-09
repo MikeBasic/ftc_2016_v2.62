@@ -145,10 +145,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         HighPriorityRunner.start();
 
         // Ensure the robot it stationary, then reset the encoders and calibrate the gyro.
-        robot.frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Send telemetry message to alert driver that we are calibrating;
         telemetry.addData(">", "Calibrating Gyro");    //
@@ -181,6 +181,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, 79, -45.0);// Drive FWD 79 inches along -50 degree
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
 
@@ -188,12 +189,14 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         gyroTurn(TURN_SPEED, -20.0, P_TURN_COEFF);
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
 
         UltraSonicReachTheWall(WALL_APPROACHING_SPEED, 60, -15.0);
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
 
@@ -205,6 +208,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         gyroTurn(TURN_SPEED, -5.0, P_TURN_COEFF);
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
 
@@ -217,12 +221,14 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         WallTrackingToWhiteLine(0.25, 60, true);
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
 
         WallTrackingToWhiteLine(LINE_DETECTION_SPEED, -18, true);
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
 
@@ -230,6 +236,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         ColorDetectionAndButtonPushing();
         if (!opModeIsActive()) {
             StopAllMotion();
+            HighPriorityRunner.go = false;
             return;
         }
 
@@ -239,6 +246,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         StopAllMotion();
         if (!opModeIsActive()) {
             StopAllMotion();
+            HighPriorityRunner.go = false;
             return;
         }
 
@@ -246,12 +254,14 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         WallTrackingToWhiteLine(0.2, -23.0, true);
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
 
         WallTrackingToWhiteLine(0.13 , 18.0, true);
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
 
@@ -259,6 +269,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         ColorDetectionAndButtonPushing();
         if (!opModeIsActive()) {
             StopAllMotion();
+            HighPriorityRunner.go = false;
             return;
         }
 
@@ -266,12 +277,14 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, 35.00, 50.0); // 30 degree
         if (!opModeIsActive()) {
             StopAllMotion();
+            HighPriorityRunner.go = false;
             return;
         }
 
         gyroTurn(TURN_SPEED, -120, P_TURN_COEFF); // turn to 90 degree
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
         robot.flicker.setPower(1.0);
@@ -281,6 +294,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         robot.intake.setPower(-0.5);
         sleep(1500);
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
         StopAllMotion();
@@ -293,11 +307,12 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, -41, -40);         // -40 degree, 41 inch
         StopAllMotion();
         if (!opModeIsActive()) {
+            HighPriorityRunner.go = false;
             return;
         }
 
-        // Finally, stop
-        StopAllMotion();
+        // Finally, quit high priority thread
+        HighPriorityRunner.go = false;
     }
 
     /**
@@ -329,60 +344,60 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         if (opModeIsActive()) {
 
             // reset encoder
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             // set mode
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
-            robot.backRightMotor.setMode(RUN_WITHOUT_ENCODER);
+            robot.LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
+//            robot.backRightMotor.setMode(RUN_WITHOUT_ENCODER);
 
             // Determine new target position, and pass to motor controller
             moveCounts = (int) (distance * COUNTS_PER_INCH);
-            newLeftTarget = robot.frontLeftMotor.getCurrentPosition() + moveCounts;
-            newRightTarget = robot.frontRightMotor.getCurrentPosition() + moveCounts;
+            newLeftTarget = robot.LeftMotor.getCurrentPosition() + moveCounts;
+            newRightTarget = robot.RightMotor.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            robot.frontLeftMotor.setTargetPosition(newLeftTarget);
-            robot.frontRightMotor.setTargetPosition(newRightTarget);
+            robot.LeftMotor.setTargetPosition(newLeftTarget);
+            robot.RightMotor.setTargetPosition(newRightTarget);
 
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // determine back motor's direction
-            if (distance < 0) {
-                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
-
-                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
-            }
+//            if (distance < 0) {
+//                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
+//
+//                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
+//            }
 
             // start motion.
             speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-            robot.frontLeftMotor.setPower(speed);
-            robot.frontRightMotor.setPower(speed);
-            robot.backRightMotor.setPower(speed);
-            robot.backLeftMotor.setPower(speed);
+            robot.LeftMotor.setPower(speed);
+            robot.RightMotor.setPower(speed);
+//            robot.backRightMotor.setPower(speed);
+//            robot.backLeftMotor.setPower(speed);
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                    (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy())) {
+                    (robot.LeftMotor.isBusy() && robot.RightMotor.isBusy())) {
 
-                if (Math.abs(robot.frontLeftMotor.getCurrentPosition()
-                        - robot.frontLeftMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
+                if (Math.abs(robot.LeftMotor.getCurrentPosition()
+                        - robot.LeftMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
                     break;
-                } else if (Math.abs(robot.frontRightMotor.getCurrentPosition()
-                        - robot.frontRightMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
+                } else if (Math.abs(robot.RightMotor.getCurrentPosition()
+                        - robot.RightMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
                     break;
                 }
 
@@ -404,47 +419,47 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                         speed - Math.abs(maxLeftRightSpeedDifferentialAtDrive * speed),
                         speed + Math.abs(maxLeftRightSpeedDifferentialAtDrive * speed));
 
-                robot.frontLeftMotor.setPower(leftSpeed);
-                robot.frontRightMotor.setPower(rightSpeed);
-                robot.backLeftMotor.setPower(leftSpeed);
-                robot.backRightMotor.setPower(rightSpeed);
+                robot.LeftMotor.setPower(leftSpeed);
+                robot.RightMotor.setPower(rightSpeed);
+//                robot.backLeftMotor.setPower(leftSpeed);
+//                robot.backRightMotor.setPower(rightSpeed);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
                 telemetry.addData("Targets L:R", "%7d:%7d", newLeftTarget, newRightTarget);
-                telemetry.addData("Actual", "%7d:%7d", robot.frontLeftMotor.getCurrentPosition(),
-                        robot.frontRightMotor.getCurrentPosition());
+                telemetry.addData("Actual", "%7d:%7d", robot.LeftMotor.getCurrentPosition(),
+                        robot.RightMotor.getCurrentPosition());
 
                 telemetry.addData("Speed", "%5.2f:%5.2f", leftSpeed, rightSpeed);
                 telemetry.update();
             }
 
             // Turn off RUN_TO_POSITION
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            if (distance < 0) {
-                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
-
-                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
-            }
+//            if (distance < 0) {
+//                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
+//
+//                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
+//            }
         }
     }
 
     public void StopAllMotion() {
         // Stop all motion;
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.backLeftMotor.setPower(0);
-        robot.backRightMotor.setPower(0);
+        robot.LeftMotor.setPower(0);
+        robot.RightMotor.setPower(0);
+//        robot.backLeftMotor.setPower(0);
+//        robot.backRightMotor.setPower(0);
         robot.intake.setPower(0);
         robot.flicker.setPower(0);
     }
@@ -492,10 +507,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         // Stop all motion;
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.backLeftMotor.setPower(0);
-        robot.backRightMotor.setPower(0);
+        robot.LeftMotor.setPower(0);
+        robot.RightMotor.setPower(0);
+//        robot.backLeftMotor.setPower(0);
+//        robot.backRightMotor.setPower(0);
     }
 
     /**
@@ -515,10 +530,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         double leftSpeed;
         double rightSpeed;
 
-        robot.frontLeftMotor.setMode(RUN_WITHOUT_ENCODER);
-        robot.frontRightMotor.setMode(RUN_WITHOUT_ENCODER);
-        robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
-        robot.backRightMotor.setMode((RUN_WITHOUT_ENCODER));
+        robot.LeftMotor.setMode(RUN_WITHOUT_ENCODER);
+        robot.RightMotor.setMode(RUN_WITHOUT_ENCODER);
+//        robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
+//        robot.backRightMotor.setMode((RUN_WITHOUT_ENCODER));
 
         // determine turn power based on +/- error
         error = getError(angle);
@@ -539,10 +554,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         // Send desired speeds to motors.
-        robot.frontLeftMotor.setPower(leftSpeed);
-        robot.frontRightMotor.setPower(rightSpeed);
-        robot.backLeftMotor.setPower(leftSpeed);
-        robot.backRightMotor.setPower(rightSpeed);
+        robot.LeftMotor.setPower(leftSpeed);
+        robot.RightMotor.setPower(rightSpeed);
+//        robot.backLeftMotor.setPower(leftSpeed);
+//        robot.backRightMotor.setPower(rightSpeed);
 
         // Display it for the driver.
         telemetry.addData("Target:current", "%5.2f:5.2f", angle, robot.gyro.getIntegratedZValue());
@@ -599,41 +614,41 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
             // reset encoder
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             // set mode
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
-            robot.backRightMotor.setMode(RUN_WITHOUT_ENCODER);
+            robot.LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
+//            robot.backRightMotor.setMode(RUN_WITHOUT_ENCODER);
 
             // Determine new target position, and pass to motor controller
             moveCounts = (int) (distance * COUNTS_PER_INCH);
-            newLeftTarget = robot.frontLeftMotor.getCurrentPosition() + moveCounts;
-            newRightTarget = robot.frontRightMotor.getCurrentPosition() + moveCounts;
+            newLeftTarget = robot.LeftMotor.getCurrentPosition() + moveCounts;
+            newRightTarget = robot.RightMotor.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            robot.frontLeftMotor.setTargetPosition(newLeftTarget);
-            robot.frontRightMotor.setTargetPosition(newRightTarget);
+            robot.LeftMotor.setTargetPosition(newLeftTarget);
+            robot.RightMotor.setTargetPosition(newRightTarget);
 
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             if (distance < 0) {
-                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
-
-                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
+//                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
+//
+//                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
 
                 targetUS_Level = TARGET_WALL_DISTANCE_BACKWARD + 2;
             } else {
@@ -642,20 +657,20 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
             // start motion.
             speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-            robot.frontLeftMotor.setPower(speed);
-            robot.frontRightMotor.setPower(speed);
-            robot.backRightMotor.setPower(speed);
-            robot.backLeftMotor.setPower(speed);
+            robot.LeftMotor.setPower(speed);
+            robot.RightMotor.setPower(speed);
+//            robot.backRightMotor.setPower(speed);
+//            robot.backLeftMotor.setPower(speed);
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                    (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy())) {
+                    (robot.LeftMotor.isBusy() && robot.RightMotor.isBusy())) {
 
-                if (Math.abs(robot.frontLeftMotor.getCurrentPosition()
-                        - robot.frontLeftMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
+                if (Math.abs(robot.LeftMotor.getCurrentPosition()
+                        - robot.LeftMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
                     break;
-                } else if (Math.abs(robot.frontRightMotor.getCurrentPosition()
-                        - robot.frontRightMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
+                } else if (Math.abs(robot.RightMotor.getCurrentPosition()
+                        - robot.RightMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
                     break;
                 }
 
@@ -677,10 +692,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                         speed - Math.abs(maxLeftRightSpeedDifferentialAtDrive * speed),
                         speed + Math.abs(maxLeftRightSpeedDifferentialAtDrive * speed));
 
-                robot.frontLeftMotor.setPower(leftSpeed);
-                robot.frontRightMotor.setPower(rightSpeed);
-                robot.backLeftMotor.setPower(leftSpeed);
-                robot.backRightMotor.setPower(rightSpeed);
+                robot.LeftMotor.setPower(leftSpeed);
+                robot.RightMotor.setPower(rightSpeed);
+//                robot.backLeftMotor.setPower(leftSpeed);
+//                robot.backRightMotor.setPower(rightSpeed);
 
                 if (distance < 0) {
                     ultraSoundLevel = robot.ultra_back.getUltrasonicLevel();
@@ -697,10 +712,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                 // handles abnormal ultrasonic reading
                 if (ultraSoundLevel == 0) {
                     // stop the robot
-                    robot.frontLeftMotor.setPower(0);
-                    robot.frontRightMotor.setPower(0);
-                    robot.backLeftMotor.setPower(0);
-                    robot.backRightMotor.setPower(0);
+                    robot.LeftMotor.setPower(0);
+                    robot.RightMotor.setPower(0);
+//                    robot.backLeftMotor.setPower(0);
+//                    robot.backRightMotor.setPower(0);
 
                     System.out.println("--Sigma2016-- abnormal -- ultrasound level=" + ultraSoundLevel);
 
@@ -719,22 +734,22 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             }
 
             // Turn off RUN_TO_POSITION
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            if (distance < 0) {
-                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
-
-                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
-            }
+//            if (distance < 0) {
+//                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
+//
+//                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
+//            }
         }
 
         return (true);
@@ -753,6 +768,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
     public void WallTrackingToWhiteLine(double speed,
                                         double distance,
                                         boolean bLineDetection) {
+        long curTime, timeInterval;
+        long previousRunTime = 0;
         int newLeftTarget;
         int newRightTarget;
         int moveCounts;
@@ -763,41 +780,41 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         if (opModeIsActive()) {
 
             // reset encoder
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             // set mode
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
-            robot.backRightMotor.setMode(RUN_WITHOUT_ENCODER);
+            robot.LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
+//            robot.backRightMotor.setMode(RUN_WITHOUT_ENCODER);
 
             // Determine new target position, and pass to motor controller
             moveCounts = (int) (distance * COUNTS_PER_INCH);
-            newLeftTarget = robot.frontLeftMotor.getCurrentPosition() + moveCounts;
-            newRightTarget = robot.frontRightMotor.getCurrentPosition() + moveCounts;
+            newLeftTarget = robot.LeftMotor.getCurrentPosition() + moveCounts;
+            newRightTarget = robot.RightMotor.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            robot.frontLeftMotor.setTargetPosition(newLeftTarget);
-            robot.frontRightMotor.setTargetPosition(newRightTarget);
+            robot.LeftMotor.setTargetPosition(newLeftTarget);
+            robot.RightMotor.setTargetPosition(newRightTarget);
 
-            robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             if (distance < 0) {
-                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
-
-                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                } else {
-                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                }
+//                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
+//
+//                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                } else {
+//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                }
 
                 targetWallDistance = TARGET_WALL_DISTANCE_BACKWARD;
             } else {
@@ -806,10 +823,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
             // start motion.
             speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-            robot.frontLeftMotor.setPower(speed);
-            robot.frontRightMotor.setPower(speed);
-            robot.backRightMotor.setPower(speed);
-            robot.backLeftMotor.setPower(speed);
+            robot.LeftMotor.setPower(speed);
+            robot.RightMotor.setPower(speed);
+//            robot.backRightMotor.setPower(speed);
+//            robot.backLeftMotor.setPower(speed);
 
             // kick off the high priority thread for wall tracking/line detection
             HighPriorityRunner.SetWallTrackingAndLineDetection(true,
@@ -820,14 +837,24 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                    (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy())) {
+                    (robot.LeftMotor.isBusy() && robot.RightMotor.isBusy())) {
+
+                curTime = System.currentTimeMillis();
+                if (previousRunTime != 0) {
+                    timeInterval = curTime - previousRunTime;
+
+                    if (timeInterval > expectedRunInterval * 2) {
+                        System.out.println("Sigma2016 -- Blue While did not run for " + timeInterval + "ms");
+                    }
+                }
+                previousRunTime = curTime;
 
                 // if motor reaches its encoder destination, stop.
-                if (Math.abs(robot.frontLeftMotor.getCurrentPosition()
-                        - robot.frontLeftMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
+                if (Math.abs(robot.LeftMotor.getCurrentPosition()
+                        - robot.LeftMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
                     break;
-                } else if (Math.abs(robot.frontRightMotor.getCurrentPosition()
-                        - robot.frontRightMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
+                } else if (Math.abs(robot.RightMotor.getCurrentPosition()
+                        - robot.RightMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
                     break;
                 }
 
@@ -852,22 +879,22 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         // Turn off RUN_TO_POSITION
-        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        if (distance < 0) {
-            if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            } else {
-                robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            }
-
-            if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-                robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            } else {
-                robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            }
-        }
+//        if (distance < 0) {
+//            if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//            } else {
+//                robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//            }
+//
+//            if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
+//                robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//            } else {
+//                robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//            }
+//        }
     }
 
     // detect the color and push the blue button.

@@ -16,10 +16,14 @@ public class HighPriorityRunnerSigma2016 extends Thread {
 
     int ct0;
 
+    public boolean go = false;
+
     // methods
     HighPriorityRunnerSigma2016(HardwareSigma2016 ourHardware) {
         robot = ourHardware;
+
         this.setPriority(this.MAX_PRIORITY);
+        this.go = true;
     }
 
     public void SetWallTrackingAndLineDetection(boolean bWall,
@@ -83,7 +87,7 @@ public class HighPriorityRunnerSigma2016 extends Thread {
         // The Color Number calculated by the sensor is refreshed approximately 100 times per second.
         int expectedRunInterval = 10; // millisecond
 
-        while (true) {
+        while (this.go) {
 
             // check if task runs on time
             curTime = System.currentTimeMillis();
@@ -121,15 +125,6 @@ public class HighPriorityRunnerSigma2016 extends Thread {
 
             // wall tracking
             if (bWallTracking) {
-                curTime = System.currentTimeMillis();
-                if (previousRunTime != 0) {
-                    timeInterval = curTime - previousRunTime;
-
-                    if (timeInterval > expectedRunInterval * 2) {
-                        System.out.println("Sigma2016 -- Blue While did not run for " + timeInterval + "ms");
-                    }
-                }
-                previousRunTime = curTime;
 
                 if (travelDistance < 0) {
                     ultraSoundLevel = robot.ultra_back.getUltrasonicLevel();
