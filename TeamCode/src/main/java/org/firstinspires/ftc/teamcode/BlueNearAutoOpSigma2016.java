@@ -144,11 +144,9 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         HighPriorityRunner = new HighPriorityRunnerSigma2016(robot);
         HighPriorityRunner.start();
 
-        // Ensure the robot it stationary, then reset the encoders and calibrate the gyro.
+        // Ensure the robot is stationary, then reset the encoders and calibrate the gyro.
         robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Send telemetry message to alert driver that we are calibrating;
         telemetry.addData(">", "Calibrating Gyro");    //
@@ -346,14 +344,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             // reset encoder
             robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            robot.backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             // set mode
             robot.LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
-//            robot.backRightMotor.setMode(RUN_WITHOUT_ENCODER);
 
             // Determine new target position, and pass to motor controller
             moveCounts = (int) (distance * COUNTS_PER_INCH);
@@ -367,27 +361,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             robot.LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // determine back motor's direction
-//            if (distance < 0) {
-//                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//                } else {
-//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-//                }
-//
-//                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//                } else {
-//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-//                }
-//            }
-
             // start motion.
             speed = Range.clip(Math.abs(speed), 0.0, 1.0);
             robot.LeftMotor.setPower(speed);
             robot.RightMotor.setPower(speed);
-//            robot.backRightMotor.setPower(speed);
-//            robot.backLeftMotor.setPower(speed);
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
@@ -421,8 +398,6 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
                 robot.LeftMotor.setPower(leftSpeed);
                 robot.RightMotor.setPower(rightSpeed);
-//                robot.backLeftMotor.setPower(leftSpeed);
-//                robot.backRightMotor.setPower(rightSpeed);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
@@ -437,20 +412,6 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             // Turn off RUN_TO_POSITION
             robot.LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-//            if (distance < 0) {
-//                if (robot.backLeftMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//                } else {
-//                    robot.backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-//                }
-//
-//                if (robot.backRightMotor.getDirection() == DcMotorSimple.Direction.FORWARD) {
-//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//                } else {
-//                    robot.backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-//                }
-//            }
         }
     }
 
@@ -458,10 +419,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         // Stop all motion;
         robot.LeftMotor.setPower(0);
         robot.RightMotor.setPower(0);
-//        robot.backLeftMotor.setPower(0);
-//        robot.backRightMotor.setPower(0);
+
         robot.intake.setPower(0);
         robot.flicker.setPower(0);
+        robot.CapLifter.setPower(0);
     }
 
     /**
@@ -477,11 +438,27 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
      */
     public void gyroTurn(double speed, double angle, double turnCoeff) {
 
+        double power = 0.1;
+
+        // Notify high priority runner
+        robot.targetSpeed = speed;
+
         // keep looping while we are still active, and not on heading.
-        while (opModeIsActive() && !onHeading(speed, angle, turnCoeff)) {
+        while (opModeIsActive() && !onHeading(power, angle, turnCoeff)) {
             // Update telemetry & Allow time for other processes to run.
             telemetry.update();
+
+            // Monitor speed and adjust power if necessary
+            if (robot.currentSpeed < robot.targetSpeed) {
+                power += 0.05;
+            }
+            else if (robot.currentSpeed > robot.targetSpeed)
+            {
+                power -= 0.05;
+            }
         }
+
+        robot.targetSpeed = 0;
     }
 
     /**
@@ -523,46 +500,43 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
      * @param PCoeff Proportional Gain coefficient
      * @return
      */
-    boolean onHeading(double speed, double angle, double PCoeff) {
+    boolean onHeading(double power, double angle, double PCoeff) {
         double error;
         double steer;
         boolean onTarget = false;
-        double leftSpeed;
-        double rightSpeed;
+        double leftPower;
+        double rightPower;
 
         robot.LeftMotor.setMode(RUN_WITHOUT_ENCODER);
         robot.RightMotor.setMode(RUN_WITHOUT_ENCODER);
-//        robot.backLeftMotor.setMode(RUN_WITHOUT_ENCODER);
-//        robot.backRightMotor.setMode((RUN_WITHOUT_ENCODER));
 
         // determine turn power based on +/- error
         error = getError(angle);
 
         if (Math.abs(error) <= TURN_THRESHOLD) {
             steer = 0.0;
-            leftSpeed = 0.0;
-            rightSpeed = 0.0;
+            leftPower = 0.0;
+            rightPower = 0.0;
             onTarget = true;
         } else {
             steer = getSteer(error, PCoeff);
-            rightSpeed = speed * steer;
-            if (Math.abs(rightSpeed) < MIN_TURN_SPEED) {
-                rightSpeed = Math.abs(rightSpeed) * MIN_TURN_SPEED / rightSpeed;
-            }
+            rightPower = power * steer;
 
-            leftSpeed = -rightSpeed;
+//            if (Math.abs(rightSpeed) < MIN_TURN_SPEED) {
+//                rightSpeed = Math.abs(rightSpeed) * MIN_TURN_SPEED / rightSpeed;
+//            }
+
+            leftPower = -rightPower;
         }
 
-        // Send desired speeds to motors.
-        robot.LeftMotor.setPower(leftSpeed);
-        robot.RightMotor.setPower(rightSpeed);
-//        robot.backLeftMotor.setPower(leftSpeed);
-//        robot.backRightMotor.setPower(rightSpeed);
+        // Send desired power to motors.
+        robot.LeftMotor.setPower(leftPower);
+        robot.RightMotor.setPower(rightPower);
 
         // Display it for the driver.
         telemetry.addData("Target:current", "%5.2f:5.2f", angle, robot.gyro.getIntegratedZValue());
         telemetry.addData("Err/St", "%5.2f/%5.2f", error, steer);
-        telemetry.addData("Speed.", "%5.2f:%5.2f", leftSpeed, rightSpeed);
+        telemetry.addData("Speed.", "%5.2f:%5.2f", leftPower, rightPower);
 
         return onTarget;
     }

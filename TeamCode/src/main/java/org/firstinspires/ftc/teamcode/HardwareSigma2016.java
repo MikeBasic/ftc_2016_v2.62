@@ -34,12 +34,12 @@ public class HardwareSigma2016
     public double targetSpeed = 0;
     public double currentAngleSpeed = 0;
     public double currentSpeed = 0;
+    public double maxSpeed = 1.0; // need tune this value
 
     /* Public OpMode members. */
     public DcMotor  LeftMotor = null;
     public DcMotor  RightMotor = null;
-//    public DcMotor  frontLeftMotor = null;
-//    public DcMotor  frontRightMotor = null;
+    public DcMotor  CapLifter = null;
     public DcMotor  flicker = null;
     public DcMotor  intake = null;
     public Servo    pusherL    = null;
@@ -80,6 +80,8 @@ public class HardwareSigma2016
 
         flicker = hwMap.dcMotor.get("flicker");
         intake = hwMap.dcMotor.get("intake");
+
+        CapLifter = hwMap.dcMotor.get("CapLifter");
 
         LeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         RightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors

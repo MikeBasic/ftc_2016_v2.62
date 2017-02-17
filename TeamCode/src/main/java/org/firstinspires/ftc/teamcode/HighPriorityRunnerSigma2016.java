@@ -9,14 +9,20 @@ public class HighPriorityRunnerSigma2016 extends Thread {
 
     boolean bWallTracking = false;
     boolean bLineDetection = false;
+    boolean bOnHeading = false;
 
-    double targetSpeed = 0.0;
     double travelDistance = 0.0;
     double targetWallDistance = 0.0;
 
     int ct0;
 
     public boolean go = false;
+
+    // speed calculation variables
+    int lastLeftEncoderPosition = 0;
+    int lastRightEncoderPosition = 0;
+    double lastAngle = 0.0;
+    long lastRunTime = 0;
 
     // methods
     HighPriorityRunnerSigma2016(HardwareSigma2016 ourHardware) {
@@ -34,39 +40,37 @@ public class HighPriorityRunnerSigma2016 extends Thread {
         bWallTracking = bWall;
         bLineDetection = bLine;
 
-        targetSpeed = fSpeed;
+        robot.targetSpeed = fSpeed;
         travelDistance = fDistance;
         targetWallDistance = fWallDistance;
 
         System.out.println("Sigma2016 -- wall tracking is " + bWall + " and line detection is " + bLine);
-        System.out.println("Sigma2016 -- speed is " + targetSpeed + " distance is " + travelDistance);
+        System.out.println("Sigma2016 -- target speed is " + fSpeed + " distance is " + travelDistance);
     }
 
-    public int SpeedControl() {
-        double speedTime1;
-        double speedTime2;
-        int position1;
-        int position2;
-        int angle1;
-        int angle2;
-        double currentSpeed;
-        double currentAngleSpeed;
+    public int GetSpeed() {
+        int leftEncoderPosition = 0;
+        int rightEncoderPosition = 0;
+        long currentTime = 0, timeDelta;
+        double lastSpeed = 0.0;
+        double angle = 0;
+        double leftSpeed, rightSpeed;
 
-        speedTime1 = System.currentTimeMillis();
-        position1 = robot.frontLeftMotor.getCurrentPosition();
-        speedTime2 = System.currentTimeMillis();
-        position2 = robot.frontLeftMotor.getCurrentPosition();
+        // calculate current speed and angle speed
+        currentTime = System.currentTimeMillis();
+        timeDelta = currentTime - lastRunTime;
 
-        robot.currentSpeed = Math.abs(position2 - position1) / (speedTime2 - speedTime1);
+        leftEncoderPosition = robot.LeftMotor.getCurrentPosition();
+        rightEncoderPosition = robot.RightMotor.getCurrentPosition();
 
-        speedTime1 = System.currentTimeMillis();
-        angle1 = robot.gyro.getHeading();
-        speedTime2 = System.currentTimeMillis();
-        angle2 = robot.gyro.getHeading();
+        leftSpeed = Math.abs(leftEncoderPosition - lastLeftEncoderPosition) / timeDelta;
+        rightSpeed = Math.abs(rightEncoderPosition - lastRightEncoderPosition) / timeDelta;
+        robot.currentSpeed = Math.max(leftSpeed, rightSpeed) / robot.maxSpeed;  // normalized speed. value from 0.0 to 1.0
 
-        robot.currentAngleSpeed = Math.abs(angle2 - angle1) / (speedTime2 - speedTime1);
+        angle = robot.gyro.getIntegratedZValue();
+        robot.currentAngleSpeed = Math.abs(angle - lastAngle) / timeDelta;
 
-        return(0);
+        return (0);
     }
 
     public void run() {
@@ -80,8 +84,8 @@ public class HighPriorityRunnerSigma2016 extends Thread {
         double ultraSoundLevel, angleOffset;
         int lightlevel = 0;
         double targetAngleOffset, angleSteer;
-        double minSpeed = -Math.abs(targetSpeed);
-        double maxSpeed = Math.abs(targetSpeed);
+        double minSpeed = -Math.abs(robot.targetSpeed);
+        double maxSpeed = Math.abs(robot.targetSpeed);
 
         // from Hitecnic color sensor web page
         // The Color Number calculated by the sensor is refreshed approximately 100 times per second.
@@ -99,6 +103,9 @@ public class HighPriorityRunnerSigma2016 extends Thread {
                 }
             }
             previousRunTime = curTime;
+
+            // Get current speed information
+            GetSpeed();
 
             // line detection
             if (bLineDetection) {
@@ -167,16 +174,14 @@ public class HighPriorityRunnerSigma2016 extends Thread {
 
                     steer = Math.signum(travelDistance) * angleSteer * 0.04;
 
-                    leftSpeed = targetSpeed - steer;
-                    rightSpeed = targetSpeed + steer;
+                    leftSpeed = robot.targetSpeed - steer;
+                    rightSpeed = robot.targetSpeed + steer;
 
                     leftSpeed = Range.clip(leftSpeed, minSpeed, maxSpeed);
                     rightSpeed = Range.clip(rightSpeed, minSpeed, maxSpeed);
 
-                    robot.frontLeftMotor.setPower(leftSpeed);
-                    robot.frontRightMotor.setPower(rightSpeed);
-                    robot.backLeftMotor.setPower(leftSpeed);
-                    robot.backRightMotor.setPower(rightSpeed);
+                    robot.LeftMotor.setPower(leftSpeed);
+                    robot.RightMotor.setPower(rightSpeed);
 
                     if (ct0 == 0) {
                         System.out.println("--Sigma2016-- error=" + String.format(Double.toString(error), "%5.2f")
@@ -195,16 +200,14 @@ public class HighPriorityRunnerSigma2016 extends Thread {
 
                     steer = Math.signum(travelDistance) * angleSteer * 0.02;
 
-                    leftSpeed = targetSpeed - steer;
-                    rightSpeed = targetSpeed + steer;
+                    leftSpeed = robot.targetSpeed - steer;
+                    rightSpeed = robot.targetSpeed + steer;
 
                     leftSpeed = Range.clip(leftSpeed, minSpeed, maxSpeed);
                     rightSpeed = Range.clip(rightSpeed, minSpeed, maxSpeed);
 
-                    robot.frontLeftMotor.setPower(leftSpeed);
-                    robot.frontRightMotor.setPower(rightSpeed);
-                    robot.backLeftMotor.setPower(leftSpeed);
-                    robot.backRightMotor.setPower(rightSpeed);
+                    robot.LeftMotor.setPower(leftSpeed);
+                    robot.RightMotor.setPower(rightSpeed);
 
                     if (ct0 == 0) {
                         System.out.println("--Sigma2016-- error=" + String.format(Double.toString(error), "%5.2f")
@@ -223,16 +226,14 @@ public class HighPriorityRunnerSigma2016 extends Thread {
 
                     steer = Math.signum(travelDistance) * angleSteer * 0.04;
 
-                    leftSpeed = targetSpeed - steer;
-                    rightSpeed = targetSpeed + steer;
+                    leftSpeed = robot.targetSpeed - steer;
+                    rightSpeed = robot.targetSpeed + steer;
 
                     leftSpeed = Range.clip(leftSpeed, minSpeed, maxSpeed);
                     rightSpeed = Range.clip(rightSpeed, minSpeed, maxSpeed);
 
-                    robot.frontLeftMotor.setPower(leftSpeed);
-                    robot.frontRightMotor.setPower(rightSpeed);
-                    robot.backLeftMotor.setPower(leftSpeed);
-                    robot.backRightMotor.setPower(rightSpeed);
+                    robot.LeftMotor.setPower(leftSpeed);
+                    robot.RightMotor.setPower(rightSpeed);
 
                     if (ct0 == 0) {
                         System.out.println("--Sigma2016-- error=" + String.format(Double.toString(error), "%5.2f")

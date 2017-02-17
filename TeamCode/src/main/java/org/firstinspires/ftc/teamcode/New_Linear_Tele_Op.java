@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Paint;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -25,6 +27,7 @@ public class New_Linear_Tele_Op extends LinearOpMode{
     DcMotor backLeft;
     DcMotor flicker;
     DcMotor intake;
+    DcMotor CapLift;
 
     Servo beaconL;
     Servo beaconR;
@@ -34,10 +37,16 @@ public class New_Linear_Tele_Op extends LinearOpMode{
     float intakeThrottle;
     float flickerThrottle;
 
+    boolean capSemiAuto;
     boolean y;
     boolean a;
     boolean up;
     boolean down;
+    boolean emergencyCapBreak;
+    boolean capUp;
+    boolean capDown;
+    boolean capFaster;
+    boolean capSlower;
     double beaconLPos;
     double beaconRPos;
     int increment;
@@ -51,6 +60,7 @@ public class New_Linear_Tele_Op extends LinearOpMode{
     public void runOpMode() {
         myinit();
         increment = 5;
+        CapLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
 
         while (opModeIsActive()) {
@@ -68,8 +78,12 @@ public class New_Linear_Tele_Op extends LinearOpMode{
             up = gamepad2.dpad_up;
             down = gamepad2.dpad_down;
 
-
-
+            capSemiAuto = gamepad2.right_stick_button;
+            emergencyCapBreak = gamepad2.left_stick_button;
+            capUp = gamepad2.right_bumper;
+            capDown = gamepad2.left_bumper;
+            capFaster = gamepad2.b;
+            capSlower = gamepad2.x;
 
             if(gamepad1.dpad_down) {
                 direction *= -1;
@@ -144,6 +158,46 @@ public class New_Linear_Tele_Op extends LinearOpMode{
             else{
                 beaconL.setPosition(0.5);
             }
+
+            if(capSemiAuto)
+            {
+                //motor moves
+                capSemiAuto(-52, 0.6);
+
+            }
+
+            if(emergencyCapBreak)
+            {
+                CapLift.setPower(0);
+            }
+
+            if(capDown)
+            {
+                double manualDownCapPower = 0.4;
+                CapLift.setPower(manualDownCapPower);
+                if(capFaster)
+                {
+                    manualDownCapPower += 0.1;
+                }
+                if(capSlower)
+                {
+                    manualDownCapPower -= 0.1;
+                }
+            }
+
+            if(capUp)
+            {
+                double manualUpCapPower = -0.4;
+                CapLift.setPower(manualUpCapPower);
+                if(capFaster)
+                {
+                    manualUpCapPower -= 0.1;
+                }
+                if(capSlower)
+                {
+                    manualUpCapPower += 0.1;
+                }
+            }
         }
     }
     public void myinit(){
@@ -151,6 +205,8 @@ public class New_Linear_Tele_Op extends LinearOpMode{
         frontLeft = hardwareMap.dcMotor.get("motor_1");
         backRight = hardwareMap.dcMotor.get("motor_4");
         backLeft = hardwareMap.dcMotor.get("motor_2");
+        CapLift = hardwareMap.dcMotor.get("capLift");
+
         beaconL = hardwareMap.servo.get("pusher_l");
         beaconR = hardwareMap.servo.get("pusher_r");
 
@@ -247,6 +303,8 @@ public class New_Linear_Tele_Op extends LinearOpMode{
         if (gamepad1.right_bumper){
             increment  = 5;
         }
+
+
         telemetry.addData("increment:", increment);
         telemetry.addData("left", left);
         telemetry.addData("right", right);
@@ -397,5 +455,35 @@ public class New_Linear_Tele_Op extends LinearOpMode{
         if (gamepad1.right_bumper){
             increment  = 5;
         }
+    }
+
+    public void capSemiAuto(double distance, double speed)
+    {
+        int newCapTarget;
+        int moveCounts;
+
+        CapLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        moveCounts = (int) (distance * 46);
+        newCapTarget = robot.LeftMotor.getCurrentPosition() + moveCounts;
+        CapLift.setTargetPosition(newCapTarget);
+        CapLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        speed = Range.clip(Math.abs(speed), 0.0, 1.0);
+        CapLift.setPower(speed);
+
+        if(capFaster)
+        {
+            speed++;
+        }
+        if (capSlower)
+        {
+            speed--;
+        }
+
+    }
+
+    public void capSpeed(double speed)
+    {
+
     }
 }
