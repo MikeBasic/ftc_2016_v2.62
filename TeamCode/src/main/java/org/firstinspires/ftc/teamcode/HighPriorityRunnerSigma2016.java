@@ -64,11 +64,15 @@ public class HighPriorityRunnerSigma2016 extends Thread {
         leftEncoderPosition = robot.LeftMotor.getCurrentPosition();
         rightEncoderPosition = robot.RightMotor.getCurrentPosition();
 
-        leftSpeed = Math.abs(leftEncoderPosition - lastLeftEncoderPosition) / timeDelta;
-        rightSpeed = Math.abs(rightEncoderPosition - lastRightEncoderPosition) / timeDelta;
+        leftSpeed = Math.abs(leftEncoderPosition - lastLeftEncoderPosition) / (double)timeDelta;
+        rightSpeed = Math.abs(rightEncoderPosition - lastRightEncoderPosition) / (double)timeDelta;
 
         // calculate current speed -- unit inch per second
         robot.currentSpeed = Math.max(leftSpeed, rightSpeed) * 1000 / robot.COUNTS_PER_INCH;  // inch per second
+
+        System.out.println(leftEncoderPosition + "-" + lastLeftEncoderPosition + "=" + leftSpeed);
+        System.out.println(rightEncoderPosition + "-" + lastRightEncoderPosition + "=" + rightSpeed);
+        System.out.println("timeDelta=" + timeDelta);
 
         lastLeftEncoderPosition = leftEncoderPosition;
         lastRightEncoderPosition = rightEncoderPosition;
@@ -95,7 +99,7 @@ public class HighPriorityRunnerSigma2016 extends Thread {
 
         // from Hitecnic color sensor web page
         // The Color Number calculated by the sensor is refreshed approximately 100 times per second.
-        int expectedRunInterval = 10; // millisecond
+        int expectedRunInterval = 50; // millisecond
 
         while (this.go) {
 

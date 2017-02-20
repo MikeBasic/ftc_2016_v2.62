@@ -203,11 +203,10 @@ public class New_Linear_Tele_Op extends LinearOpMode{
 
             if(Storage)
             {
-                //StorageS.setPosition(robot.STORAGE_UP);
-                StorageS.setPosition(robot.STORAGE_DOWN);
+                StorageS.setPosition(robot.STORAGE_UP);
             }
             else{
-                StorageS.setPosition(robot.STORAGE_UP);
+                StorageS.setPosition(robot.STORAGE_DOWN);
             }
         }
     }

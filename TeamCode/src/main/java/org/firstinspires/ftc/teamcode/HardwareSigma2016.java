@@ -39,7 +39,7 @@ public class HardwareSigma2016
     public final double CENTER_LIGHT_THRESH = 3.0;
 
     // speed
-    public static final double kMaxLinearSpeed = 20.0; // inch per second
+    public static final double kMaxLinearSpeed = 32.0; // inch per second
     public double targetAngleSpeed = 0; // degree per second
     public double targetSpeed = 0;      // inch per second
     public double currentAngleSpeed = 0; // degree per second
@@ -50,6 +50,7 @@ public class HardwareSigma2016
     public static final double maxLeftRightSpeedDifferentialAtDrive = 0.5;
     public static final double P_WALL_APPROACHING_COEFF = 0.05;
 
+    public static final double POWER_ADJ_STEP = 0.1;
     /* Public OpMode members. */
     public DcMotor  LeftMotor = null;
     public DcMotor  RightMotor = null;
@@ -68,9 +69,9 @@ public class HardwareSigma2016
     public static final double PUSHER_R_IN  =  1.0 ;
     public static final double PUSHER_L_OUT  =  1.0 ;
     public static final double PUSHER_R_OUT  =  0.0 ;
-    public static final double PUSHER_STOP = 0.4;
-    public static final double STORAGE_DOWN = 0.0;
-    public static final double STORAGE_UP = .3;
+    public static final double PUSHER_STOP = 0.5;
+    public static final double STORAGE_DOWN = 0.3;
+    public static final double STORAGE_UP = 0.1;
     public static double manualDownCapPower = -0.4;
     public static double manualUpCapPower = 0.4;
 
@@ -95,8 +96,6 @@ public class HardwareSigma2016
         // Define and Initialize Motors
         LeftMotor = hwMap.dcMotor.get("LeftMotor");
         RightMotor  = hwMap.dcMotor.get("RightMotor");
-//        backLeftMotor  = hwMap.dcMotor.get("motor_1");
-//        backRightMotor = hwMap.dcMotor.get("motor_4");
 
         flicker = hwMap.dcMotor.get("flicker");
         intake = hwMap.dcMotor.get("intake");
@@ -105,14 +104,10 @@ public class HardwareSigma2016
 
         LeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         RightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-//        backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
-//        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Set all motors to zero power
         RightMotor.setPower(0);
         LeftMotor.setPower(0);
-//        frontLeftMotor.setPower(0);
-//        frontRightMotor.setPower(0);
 
         // Define and initialize ALL installed servos.
         pusherL = hwMap.servo.get("pusher_l");

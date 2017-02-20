@@ -40,13 +40,10 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+import static org.firstinspires.ftc.teamcode.HardwareSigma2016.POWER_ADJ_STEP;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_L_IN;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_L_OUT;
-import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_R_IN;
-import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_R_OUT;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_STOP;
-import static org.firstinspires.ftc.teamcode.RedNearAutoOpSigma2016.P_WALL_APPROACHING_COEFF;
-import static org.firstinspires.ftc.teamcode.RedNearAutoOpSigma2016.maxLeftRightSpeedDifferentialAtDrive;
 
 /**
  * This file illustrates the concept of driving a path based on Gyro heading and encoder counts.
@@ -161,17 +158,17 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         // shoot the 1st ball
         robot.flicker.setPower(1.0);
-        sleep(800);
+        sleep(700);
         StopAllMotion();
 
         // release the 2nd ball
         robot.Storage.setPosition(robot.STORAGE_UP);
-        sleep(500);
+        sleep(400);
         robot.Storage.setPosition(robot.STORAGE_DOWN);
 
         // shoot the 2nd ball
         robot.flicker.setPower(1.0);
-        sleep(800);
+        sleep(700);
         StopAllMotion();
 
         // turn toward beacons
@@ -185,7 +182,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         // Drive toward beacons
         gyroDrive(0.9 * robot.kMaxLinearSpeed,  // speed
-                60,   // distance
+                50,   // distance
                 -60.0);// angle
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -422,10 +419,12 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
                 // Monitor speed and adjust power if necessary
                 if (robot.currentSpeed < robot.targetSpeed) {
-                    power += 0.05;
+                    power += POWER_ADJ_STEP;
                 } else if (robot.currentSpeed > robot.targetSpeed) {
-                    power -= 0.05;
+                    power -= POWER_ADJ_STEP;
                 }
+
+                sleep(50);
             }
 
             // Turn off RUN_TO_POSITION
@@ -462,6 +461,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         double power = 0.1;
         double initialAngle = robot.gyro.getIntegratedZValue();
         double angleRange = angle - initialAngle;
+        long curTime, timeInterval, previousRunTime = 0;
 
         // Notify high priority runner
         robot.targetSpeed = speed;
@@ -476,12 +476,19 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                 robot.targetSpeed = robot.kMinTurnSpeed;
             }
 
-            // Monitor speed and adjust power if necessary
-            if (robot.currentSpeed < robot.targetSpeed) {
-                power += 0.05;
-            } else if (robot.currentSpeed > robot.targetSpeed) {
-                power -= 0.05;
+            curTime = System.currentTimeMillis();
+            timeInterval = curTime - previousRunTime;
+
+            if (timeInterval >= 50) {
+                // Monitor speed and adjust power if necessary
+                if (robot.currentSpeed < robot.targetSpeed) {
+                    power += POWER_ADJ_STEP;
+                } else if (robot.currentSpeed > robot.targetSpeed) {
+                    power -= POWER_ADJ_STEP;
+                }
             }
+
+            previousRunTime = curTime;
         }
 
         robot.targetSpeed = 0;
@@ -513,7 +520,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             rightPower = 0.0;
             onTarget = true;
         } else {
-            rightPower = power;
+            rightPower = power * Math.signum(error);
             leftPower = -rightPower;
         }
 
@@ -674,10 +681,12 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
                 // Monitor speed and adjust power if necessary
                 if (robot.currentSpeed < robot.targetSpeed) {
-                    power += 0.05;
+                    power += POWER_ADJ_STEP;
                 } else if (robot.currentSpeed > robot.targetSpeed) {
-                    power -= 0.05;
+                    power -= POWER_ADJ_STEP;
                 }
+
+                sleep(50);
             }
 
             // Turn off RUN_TO_POSITION
@@ -710,7 +719,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         int moveCounts;
         double targetWallDistance;
         double power = 0.1;
-        int expectedRunInterval = 10; // ms
+        int expectedRunInterval = 50; // ms
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
@@ -843,16 +852,16 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             if (redCheck > RED_TRESHOLD) {
 
                 // We are blue team
-                robot.pusherR.setPosition(PUSHER_R_OUT);
+                robot.pusherR.setPosition(robot.PUSHER_R_OUT);
                 //wait servo to finish
                 sleep(1300);
 
                 // Retrieve the pusher
-                robot.pusherR.setPosition(PUSHER_R_IN);
+                robot.pusherR.setPosition(robot.PUSHER_R_IN);
                 //wait servo to finish
                 sleep(1300);
 
-                robot.pusherR.setPosition(PUSHER_STOP);
+                robot.pusherR.setPosition(robot.PUSHER_STOP);
 
                 System.out.println("--Sigma2016-- red light detected and blue button pushed. redCheck=" + redCheck + " blueCheck=" + blueCheck);
                 break;

@@ -116,10 +116,11 @@ public class MotorTestSigma2016 extends LinearOpMode {
         robot.RightMotor.setPower(1.0);
 
         timeStart = System.currentTimeMillis();
-        while(System.currentTimeMillis() - timeStart < 8000)
+        while(System.currentTimeMillis() - timeStart < 80000)
         {
-            telemetry.addData("velocity speed = %.2f in/s", robot.currentSpeed);
-            telemetry.addData("angle speed = %.2f d/s", robot.currentAngleSpeed);
+            telemetry.addData("velocity speed = ", "%.2f in/s", robot.currentSpeed);
+            telemetry.addData("enc = ", "%d %d", HighPriorityRunner.lastLeftEncoderPosition, HighPriorityRunner.lastRightEncoderPosition);
+            telemetry.addData("angle speed = ", "%.2f d/s", robot.currentAngleSpeed);
             telemetry.update();
 
             sleep(10);
