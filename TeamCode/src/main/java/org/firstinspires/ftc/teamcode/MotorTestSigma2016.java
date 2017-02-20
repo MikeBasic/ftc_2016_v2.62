@@ -67,61 +67,68 @@ public class MotorTestSigma2016 extends LinearOpMode {
         // wait for the start button to be pressed.
         waitForStart();
 
-        robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.LeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.LeftMotor.setPower(0.5);
-        sleep(500);
-        robot.LeftMotor.setPower(0.0);
-
-        robot.RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.RightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.RightMotor.setPower(0.5);
-        sleep(500);
-        robot.RightMotor.setPower(0.0);
-
-        robot.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.intake.setPower(0.5);
-        sleep(500);
-        robot.intake.setPower(0.0);
-
-        robot.flicker.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.flicker.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.flicker.setPower(0.5);
-        sleep(500);
-        robot.flicker.setPower(0.0);
-
-        robot.CapLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.CapLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.CapLifter.setPower(0.5);
-        sleep(500);
-        robot.CapLifter.setPower(0.0);
-
-        /* -------- speed test -------- */
-        // start the sensor reading thread
-//        HighPriorityRunner = new HighPriorityRunnerSigma2016(robot);
-//        HighPriorityRunner.start();
-//
 //        robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        robot.LeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        robot.LeftMotor.setPower(1.0);
+//        robot.LeftMotor.setPower(0.5);
+//        sleep(500);
+//        robot.LeftMotor.setPower(0.0);
+//        sleep(3000);
 //
 //        robot.RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        robot.RightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        robot.RightMotor.setPower(1.0);
-//
-//        timeStart = System.currentTimeMillis();
-//        while(System.currentTimeMillis() - timeStart < 5000)
-//        {
-//            telemetry.addData("velocity speed = %.2f", robot.currentSpeed);
-//            telemetry.addData("angle speed = %.2f", robot.currentAngleSpeed);
-//            telemetry.update();
-//
-//            sleep(10);
-//        }
-//
-//        robot.LeftMotor.setPower(0.0);
+//        robot.RightMotor.setPower(0.5);
+//        sleep(500);
 //        robot.RightMotor.setPower(0.0);
+//        sleep(3000);
+//
+//        robot.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        robot.intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.intake.setPower(0.5);
+//        sleep(500);
+//        robot.intake.setPower(0.0);
+//        sleep(3000);
+//
+//        robot.flicker.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        robot.flicker.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.flicker.setPower(0.5);
+//        sleep(500);
+//        robot.flicker.setPower(0.0);
+//        sleep(3000);
+//
+//        robot.CapLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        robot.CapLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.CapLifter.setPower(0.5);
+//        sleep(500);
+//        robot.CapLifter.setPower(0.0);
+//        sleep(3000);
+
+        /* -------- speed test -------- */
+        // start the high priority runner
+        HighPriorityRunner = new HighPriorityRunnerSigma2016(robot);
+        HighPriorityRunner.start();
+
+        robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.LeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.LeftMotor.setPower(1.0);
+
+        robot.RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.RightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.RightMotor.setPower(1.0);
+
+        timeStart = System.currentTimeMillis();
+        while(System.currentTimeMillis() - timeStart < 8000)
+        {
+            telemetry.addData("velocity speed = %.2f in/s", robot.currentSpeed);
+            telemetry.addData("angle speed = %.2f d/s", robot.currentAngleSpeed);
+            telemetry.update();
+
+            sleep(10);
+        }
+
+        robot.LeftMotor.setPower(0.0);
+        robot.RightMotor.setPower(0.0);
+
+        HighPriorityRunner.go = false;
 
         /* -------- encoder reading per round test -------- */
 //        robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

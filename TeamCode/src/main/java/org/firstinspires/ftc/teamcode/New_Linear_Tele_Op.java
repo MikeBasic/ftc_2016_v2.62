@@ -21,16 +21,17 @@ import com.qualcomm.robotcore.util.Range;
 
 public class New_Linear_Tele_Op extends LinearOpMode{
 
-    DcMotor frontRight;
-    DcMotor frontLeft;
-    DcMotor backRight;
-    DcMotor backLeft;
+    DcMotor LeftMotor;
+    DcMotor RightMotor;
+//    DcMotor backRight;
+//    DcMotor backLeft;
     DcMotor flicker;
     DcMotor intake;
     DcMotor CapLift;
 
     Servo beaconL;
     Servo beaconR;
+    Servo StorageS;
 
     float leftThrottle;
     float rightThrottle;
@@ -47,6 +48,7 @@ public class New_Linear_Tele_Op extends LinearOpMode{
     boolean capDown;
     boolean capFaster;
     boolean capSlower;
+    boolean Storage;
     double beaconLPos;
     double beaconRPos;
     int increment;
@@ -60,7 +62,6 @@ public class New_Linear_Tele_Op extends LinearOpMode{
     public void runOpMode() {
         myinit();
         increment = 5;
-        CapLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
 
         while (opModeIsActive()) {
@@ -77,6 +78,8 @@ public class New_Linear_Tele_Op extends LinearOpMode{
             y = gamepad2.y;
             up = gamepad2.dpad_up;
             down = gamepad2.dpad_down;
+
+            Storage = gamepad2.dpad_right;
 
             capSemiAuto = gamepad2.right_stick_button;
             emergencyCapBreak = gamepad2.left_stick_button;
@@ -113,17 +116,17 @@ public class New_Linear_Tele_Op extends LinearOpMode{
 
 
             if(y){
-                frontRight.setPower(0);
-                frontLeft.setPower(0);
-                backRight.setPower(0);
-                backLeft.setPower(0);
-                beaconR.setPosition(1.0);
+                RightMotor.setPower(0);
+                LeftMotor.setPower(0);
+//                backRight.setPower(0);
+//                backLeft.setPower(0);
+                beaconR.setPosition(-1.0);
                 try {
                     Thread.sleep(1300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                beaconR.setPosition(-1.0);
+                beaconR.setPosition(1.0);
                 try {
                     Thread.sleep(1300);
                 } catch (InterruptedException e) {
@@ -137,17 +140,17 @@ public class New_Linear_Tele_Op extends LinearOpMode{
             }
 
             if(up){
-                frontRight.setPower(0);
-                frontLeft.setPower(0);
-                backRight.setPower(0);
-                backLeft.setPower(0);
-                beaconL.setPosition(-1.0);
+                RightMotor.setPower(0);
+                LeftMotor.setPower(0);
+//                backRight.setPower(0);
+//                backLeft.setPower(0);
+                beaconL.setPosition(1.0);
                 try {
                     Thread.sleep(1300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                beaconL.setPosition(1.0);
+                beaconL.setPosition(-1.0);
                 try {
                     Thread.sleep(1300);
                 } catch (InterruptedException e) {
@@ -171,47 +174,59 @@ public class New_Linear_Tele_Op extends LinearOpMode{
                 CapLift.setPower(0);
             }
 
-            if(capDown)
-            {
-                double manualDownCapPower = 0.4;
-                CapLift.setPower(manualDownCapPower);
-                if(capFaster)
-                {
-                    manualDownCapPower += 0.1;
+            if(capDown) {
+                CapLift.setPower(0.4);
+            }
+            else if(capUp){
+                CapLift.setPower(-0.4);
+            }
+            else{
+                CapLift.setPower(0.0);
+            }
+
+            if(capFaster) {
+                robot.manualDownCapPower += 0.1;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                if(capSlower)
-                {
-                    manualDownCapPower -= 0.1;
+            }
+            if(capSlower) {
+                robot.manualDownCapPower -= 0.1;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
 
-            if(capUp)
+            if(Storage)
             {
-                double manualUpCapPower = -0.4;
-                CapLift.setPower(manualUpCapPower);
-                if(capFaster)
-                {
-                    manualUpCapPower -= 0.1;
-                }
-                if(capSlower)
-                {
-                    manualUpCapPower += 0.1;
-                }
+                //StorageS.setPosition(robot.STORAGE_UP);
+                StorageS.setPosition(robot.STORAGE_DOWN);
+            }
+            else{
+                StorageS.setPosition(robot.STORAGE_UP);
             }
         }
     }
     public void myinit(){
-        frontRight = hardwareMap.dcMotor.get("motor_3");
-        frontLeft = hardwareMap.dcMotor.get("motor_1");
-        backRight = hardwareMap.dcMotor.get("motor_4");
-        backLeft = hardwareMap.dcMotor.get("motor_2");
-        CapLift = hardwareMap.dcMotor.get("capLift");
+        RightMotor = hardwareMap.dcMotor.get("RightMotor");
+        LeftMotor = hardwareMap.dcMotor.get("LeftMotor");
+//        backRight = hardwareMap.dcMotor.get("motor_4");
+//        backLeft = hardwareMap.dcMotor.get("motor_2");
 
         beaconL = hardwareMap.servo.get("pusher_l");
         beaconR = hardwareMap.servo.get("pusher_r");
 
         flicker = hardwareMap.dcMotor.get("flicker");
         intake = hardwareMap.dcMotor.get("intake");
+
+        StorageS = hardwareMap.servo.get("Storage");
+        CapLift = hardwareMap.dcMotor.get("CapLift");
+
+        //StorageS.setPosition(.4);
 
         //beaconL.scaleRange(0.2, 0.9);
         //beaconR.scaleRange(0.2, 0.9);
@@ -251,22 +266,22 @@ public class New_Linear_Tele_Op extends LinearOpMode{
 
         //Drive motors
         if(left > 0 && right > 0 || left < 0 && right < 0){
-            frontLeft.setPower(left);
-            backLeft.setPower(left);
-            frontRight.setPower(-left);
-            backRight.setPower(-left);
+            LeftMotor.setPower(left);
+//            backLeft.setPower(left);
+            RightMotor.setPower(-left);
+//            backRight.setPower(-left);
         }
         else if(left > 0 && right < 0 || left < 0 && right > 0){
-            frontLeft.setPower(left);
-            backLeft.setPower(left);
-            frontRight.setPower(-right);
-            backRight.setPower(-right);
+            LeftMotor.setPower(left);
+//            backLeft.setPower(left);
+            RightMotor.setPower(-right);
+//            backRight.setPower(-right);
         }
         else if(left == 0 && right == 0){
-            frontLeft.setPower(0);
-            backLeft.setPower(0);
-            frontRight.setPower(0);
-            backRight.setPower(0);
+            LeftMotor.setPower(0);
+//            backLeft.setPower(0);
+            RightMotor.setPower(0);
+//            backRight.setPower(0);
         }
 
 
@@ -329,91 +344,91 @@ public class New_Linear_Tele_Op extends LinearOpMode{
         left = (float) scaleInput(left);
 
         if (increment == 11){
-            frontLeft.setPower(left * direction);
-            backLeft.setPower(left * direction);
-            frontRight.setPower(-right * direction);
-            backRight.setPower(-right * direction);
+            LeftMotor.setPower(left * direction);
+//            backLeft.setPower(left * direction);
+            RightMotor.setPower(-right * direction);
+//            backRight.setPower(-right * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }
 
         if (increment == 10){
-            frontLeft.setPower(left * direction);
-            backLeft.setPower(left * direction);
-            frontRight.setPower(-right * direction);
-            backRight.setPower(-right * direction);
+            LeftMotor.setPower(left * direction);
+//            backLeft.setPower(left * direction);
+            RightMotor.setPower(-right * direction);
+//            backRight.setPower(-right * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }
 
         if (increment == 9){
-            frontLeft.setPower(left * 0.9 * direction);
-            backLeft.setPower(left * 0.9 * direction);
-            frontRight.setPower(-right * 0.9 * direction);
-            backRight.setPower(-right * 0.9 * direction);
+            LeftMotor.setPower(left * 0.9 * direction);
+//            backLeft.setPower(left * 0.9 * direction);
+            RightMotor.setPower(-right * 0.9 * direction);
+//            backRight.setPower(-right * 0.9 * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }
 
         if (increment == 8){
-            frontLeft.setPower(left * 0.8 * direction);
-            backLeft.setPower(left * 0.8 * direction);
-            frontRight.setPower(-right * 0.8 * direction);
-            backRight.setPower(-right * 0.8 * direction);
+            LeftMotor.setPower(left * 0.8 * direction);
+//            backLeft.setPower(left * 0.8 * direction);
+            RightMotor.setPower(-right * 0.8 * direction);
+//            backRight.setPower(-right * 0.8 * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }
 
         if (increment == 7){
-            frontLeft.setPower(left * 0.7 * direction);
-            backLeft.setPower(left * 0.7 * direction);
-            frontRight.setPower(-right * 0.7 * direction);
-            backRight.setPower(-right * 0.7 * direction);
+            LeftMotor.setPower(left * 0.7 * direction);
+//            backLeft.setPower(left * 0.7 * direction);
+            RightMotor.setPower(-right * 0.7 * direction);
+//            backRight.setPower(-right * 0.7 * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }
 
         if (increment == 6){
-            frontLeft.setPower(left * 0.6 * direction);
-            backLeft.setPower(left * 0.6 * direction);
-            frontRight.setPower(-right * 0.6 * direction);
-            backRight.setPower(-right * 0.6 * direction);
+            LeftMotor.setPower(left * 0.6 * direction);
+//            backLeft.setPower(left * 0.6 * direction);
+            RightMotor.setPower(-right * 0.6 * direction);
+//            backRight.setPower(-right * 0.6 * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }
 
         if (increment == 5){
-            frontLeft.setPower(left * 0.5 * direction);
-            backLeft.setPower(left * 0.5 * direction);
-            frontRight.setPower(-right * 0.5 * direction);
-            backRight.setPower(-right * 0.5 * direction);
+            LeftMotor.setPower(left * 0.5 * direction);
+//            backLeft.setPower(left * 0.5 * direction);
+            RightMotor.setPower(-right * 0.5 * direction);
+//            backRight.setPower(-right * 0.5 * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }
 
         if (increment == 4){
-            frontLeft.setPower(left * 0.4 * direction);
-            backLeft.setPower(left * 0.4 * direction);
-            frontRight.setPower(-right * 0.4 * direction);
-            backRight.setPower(-right * 0.4 * direction);
+            LeftMotor.setPower(left * 0.4 * direction);
+//            backLeft.setPower(left * 0.4 * direction);
+            RightMotor.setPower(-right * 0.4 * direction);
+//            backRight.setPower(-right * 0.4 * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }
 
         if (increment == 3){
-            frontLeft.setPower(left * 0.3 * direction);
-            backLeft.setPower(left * 0.3 * direction);
-            frontRight.setPower(-right * 0.3 * direction);
-            backRight.setPower(-right * 0.3 * direction);
+            LeftMotor.setPower(left * 0.3 * direction);
+//            backLeft.setPower(left * 0.3 * direction);
+            RightMotor.setPower(-right * 0.3 * direction);
+//            backRight.setPower(-right * 0.3 * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }
 
         if (increment == 2){
-            frontLeft.setPower(left * 0.3 * direction);
-            backLeft.setPower(left * 0.3 * direction);
-            frontRight.setPower(-right * 0.3 * direction);
-            backRight.setPower(-right * 0.3 * direction);
+            LeftMotor.setPower(left * 0.3 * direction);
+//            backLeft.setPower(left * 0.3 * direction);
+            RightMotor.setPower(-right * 0.3 * direction);
+//            backRight.setPower(-right * 0.3 * direction);
             telemetry.addData("increment:", increment);
             telemetry.update();
         }

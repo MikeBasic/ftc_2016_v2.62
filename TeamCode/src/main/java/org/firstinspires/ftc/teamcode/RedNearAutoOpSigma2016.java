@@ -96,7 +96,6 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
     static final double DRIVE_SPEED = 0.9;     // Nominal speed for better accuracy.
     static final double P_DRIVE_COEFF = 0.05;     // Larger is more responsive, but also less stable
 
-    static final double TURN_SPEED = 0.25;     // Nominal half speed for better accuracy.
     static final double TURN_THRESHOLD = 2;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.05;     // Larger is more responsive, but also less stable
     static final double MIN_TURN_SPEED = 0.2;     // Larger is more responsive, but also less stable with over turn
@@ -186,7 +185,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         // Turn to -20 degree. Make the turn coeff huge so full TURN_SPEED power will be used.
-        gyroTurn(TURN_SPEED, 20.0, P_TURN_COEFF);
+        gyroTurn(0.3, 20.0, P_TURN_COEFF);
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -205,7 +204,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
 
         // Turn to 0.0 degree with speed TURN_SPEED. Make the turn coeff huge so full TURN_SPEED power will be used.
         // Otherwise the robot could stuck because only a portion of TURN_SPEED power is applied.
-        gyroTurn(TURN_SPEED, 5.0, P_TURN_COEFF);
+        gyroTurn(0.3, 5.0, P_TURN_COEFF);
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -281,7 +280,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
             return;
         }
 
-        gyroTurn(TURN_SPEED, 150, P_TURN_COEFF); // turn to 90 degree
+        gyroTurn(0.3, 150, P_TURN_COEFF); // turn to 90 degree
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -303,7 +302,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         sleep(800);
         StopAllMotion();
 
-        gyroTurn(TURN_SPEED, 40, P_TURN_COEFF);  // -40 degree
+        gyroTurn(0.3, 40, P_TURN_COEFF);  // -40 degree
         gyroDrive(DRIVE_SPEED, 41, 40);         // -40 degree, 41 inch
         StopAllMotion();
         if (!opModeIsActive()) {
