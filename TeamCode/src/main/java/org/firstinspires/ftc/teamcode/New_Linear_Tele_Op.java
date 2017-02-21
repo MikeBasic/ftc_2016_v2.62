@@ -55,6 +55,10 @@ public class New_Linear_Tele_Op extends LinearOpMode{
     int direction = 1;
     boolean straight = false;
     boolean normal = true;
+    int count = 0;
+    boolean flick = false;
+    int x = 0;
+    int target = 1680;
 
     HardwareSigma2016 robot = new HardwareSigma2016();   // Use a Pushbot's hardware
 
@@ -72,7 +76,20 @@ public class New_Linear_Tele_Op extends LinearOpMode{
             flickerThrottle = gamepad2.right_stick_y;
 
             intake.setPower(intakeThrottle);
-            flicker.setPower(flickerThrottle);
+
+            if(flickerThrottle > 0) {
+                flicker.setTargetPosition(target);
+                flicker.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                flicker.setPower(1);
+                target += 1680;
+                sleep(500);
+            }
+
+
+                //sleep(750);
+
+
+            //flicker.setPower(flickerThrottle);
 
             a = gamepad2.a;
             y = gamepad2.y;
@@ -115,7 +132,7 @@ public class New_Linear_Tele_Op extends LinearOpMode{
 
 
 
-            if(y){
+            /*if(y){
                 RightMotor.setPower(0);
                 LeftMotor.setPower(0);
 //                backRight.setPower(0);
@@ -144,23 +161,23 @@ public class New_Linear_Tele_Op extends LinearOpMode{
                 LeftMotor.setPower(0);
 //                backRight.setPower(0);
 //                backLeft.setPower(0);
-                beaconL.setPosition(1.0);
+                //beaconL.setPosition(1.0);
                 try {
-                    Thread.sleep(1300);
+                    //Thread.sleep(1300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                beaconL.setPosition(-1.0);
+                //beaconL.setPosition(-1.0);
                 try {
-                    Thread.sleep(1300);
+                    //Thread.sleep(1300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                beaconL.setPosition(0.5);
+                //beaconL.setPosition(0.5);
             }
             else{
-                beaconL.setPosition(0.5);
-            }
+                //beaconL.setPosition(0.5);
+            }*/
 
             if(capSemiAuto)
             {
@@ -225,6 +242,12 @@ public class New_Linear_Tele_Op extends LinearOpMode{
         StorageS = hardwareMap.servo.get("Storage");
         CapLift = hardwareMap.dcMotor.get("CapLift");
 
+        flicker.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flicker.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
+
         //StorageS.setPosition(.4);
 
         //beaconL.scaleRange(0.2, 0.9);
@@ -261,7 +284,7 @@ public class New_Linear_Tele_Op extends LinearOpMode{
         right = (float) scaleInput(right);
         left = (float) scaleInput(left);
 
-        double power = increment/10;
+        double power = (float) increment/10;
 
         //Drive motors
         if(left > 0 && right > 0 || left < 0 && right < 0){
@@ -463,12 +486,32 @@ public class New_Linear_Tele_Op extends LinearOpMode{
         }
 
         if (gamepad1.left_bumper){
-            increment  = 10;
+            x++;
+            x %= 3;
+            if(x == 0){
+                increment = 5;
+            }
+            else if(x == 1){
+                increment = 7;
+            }
+            else if(x == 2){
+                increment = 10;
+            }
         }
 
-        if (gamepad1.right_bumper){
-            increment  = 5;
+        if (gamepad1.right_bumper && x != 0){
+            x--;
+            if(x == 0){
+                increment = 5;
+            }
+            else if(x == 1){
+                increment = 7;
+            }
+            else if(x == 2){
+                increment = 10;
+            }
         }
+
     }
 
     public void capSemiAuto(double distance, double speed)

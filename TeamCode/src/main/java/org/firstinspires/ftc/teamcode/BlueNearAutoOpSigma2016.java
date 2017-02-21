@@ -40,6 +40,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+import static com.qualcomm.robotcore.util.Range.clip;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.POWER_ADJ_STEP;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_L_IN;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_L_OUT;
@@ -127,6 +128,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         // make sure the gyro is calibrated before continuing
         while (!isStopRequested() && robot.gyro.isCalibrating()) {
+            robot.opModeLiveCheck = 1;
+
             sleep(50);
             idle();
         }
@@ -138,6 +141,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         // Wait for the game to start (Display Gyro value), and reset gyro before we move..
         while (!isStarted()) {
+            robot.opModeLiveCheck = 1;
+
             telemetry.addData(">", "Robot Heading = %d", robot.gyro.getIntegratedZValue());
             telemetry.update();
             idle();
@@ -158,8 +163,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         // shoot the 1st ball
         robot.flicker.setPower(1.0);
-        sleep(700);
-        StopAllMotion();
+        sleep(800);
+        robot.flicker.setPower(0);
 
         // release the 2nd ball
         robot.Storage.setPosition(robot.STORAGE_UP);
@@ -168,12 +173,12 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         // shoot the 2nd ball
         robot.flicker.setPower(1.0);
-        sleep(700);
-        StopAllMotion();
+        sleep(800);
+        robot.flicker.setPower(0);
 
         // turn toward beacons
-        gyroTurn(0.3 * robot.kMaxLinearSpeed, // turn speed
-                -60.0); // target heading
+        gyroTurn(0.4 * robot.kMaxLinearSpeed, // turn speed
+                -50.0); // target heading
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -182,15 +187,15 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         // Drive toward beacons
         gyroDrive(0.9 * robot.kMaxLinearSpeed,  // speed
-                50,   // distance
-                -60.0);// angle
+                48,   // distance
+                -50.0);// angle
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
             return;
         }
 
-        gyroTurn(0.25 * robot.kMaxLinearSpeed, // turn speed
+        gyroTurn(0.2 * robot.kMaxLinearSpeed, // turn speed
                 -20.0); // target heading
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -198,7 +203,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             return;
         }
 
-        UltraSonicReachTheWall(0.6 * robot.kMaxLinearSpeed, //speed
+        UltraSonicReachTheWall(0.5 * robot.kMaxLinearSpeed, //speed
                 60, //distance
                 -15.0); //angle (absolute)
         StopAllMotion();
@@ -210,7 +215,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         // 2nd line detection background light level sampling point
         robot.groundbrightness_test2 = robot.lineLightSensor.red() + robot.lineLightSensor.green() + robot.lineLightSensor.blue();
 
-        gyroTurn(0.3 * robot.kMaxLinearSpeed, //speed
+        gyroTurn(0.2 * robot.kMaxLinearSpeed, //speed
                 -2.0); //angle
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -263,7 +268,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         // detect the near white line
-        WallTrackingToWhiteLine(0.2 * robot.kMaxLinearSpeed, //speed
+        WallTrackingToWhiteLine(0.25 * robot.kMaxLinearSpeed, //speed
                 -23.0, //distance
                 true); //color detection
         StopAllMotion();
@@ -344,7 +349,9 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         double steer;
         double leftPower;
         double rightPower;
-        double power = 0.1;
+        double power = speed / robot.kMaxLinearSpeed;
+        long curTime, timeInterval;
+        long lastSpeedCheckTime = 0;
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
@@ -398,10 +405,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                 leftPower = power - steer;
                 rightPower = power + steer;
 
-                leftPower = Range.clip(leftPower,
+                leftPower = clip(leftPower,
                         power - Math.abs(robot.maxLeftRightSpeedDifferentialAtDrive * power),
                         power + Math.abs(robot.maxLeftRightSpeedDifferentialAtDrive * power));
-                rightPower = Range.clip(rightPower,
+                rightPower = clip(rightPower,
                         power - Math.abs(robot.maxLeftRightSpeedDifferentialAtDrive * power),
                         power + Math.abs(robot.maxLeftRightSpeedDifferentialAtDrive * power));
 
@@ -418,13 +425,21 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                 telemetry.update();
 
                 // Monitor speed and adjust power if necessary
-                if (robot.currentSpeed < robot.targetSpeed) {
-                    power += POWER_ADJ_STEP;
-                } else if (robot.currentSpeed > robot.targetSpeed) {
-                    power -= POWER_ADJ_STEP;
+                curTime = System.currentTimeMillis();
+                timeInterval = curTime - lastSpeedCheckTime;
+                if (timeInterval > robot.SPEED_CHECK_INTERVAL) {
+                    if (robot.currentSpeed < robot.targetSpeed * (1.0 - robot.SPEED_HYSTERESIS_RANGE)) {
+                        power += POWER_ADJ_STEP;
+                    } else if (robot.currentSpeed > robot.targetSpeed * (1.0 + robot.SPEED_HYSTERESIS_RANGE)) {
+                        power -= POWER_ADJ_STEP;
+                    }
+
+                    power = Range.clip(power, 0.0, 1.0);
+
+                    lastSpeedCheckTime = curTime;
                 }
 
-                sleep(50);
+                robot.opModeLiveCheck = 1;
             }
 
             // Turn off RUN_TO_POSITION
@@ -440,9 +455,9 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         robot.LeftMotor.setPower(0);
         robot.RightMotor.setPower(0);
 
-        robot.intake.setPower(0);
-        robot.flicker.setPower(0);
-        robot.CapLifter.setPower(0);
+//        robot.intake.setPower(0);
+//        robot.flicker.setPower(0);
+//        robot.CapLifter.setPower(0);
     }
 
     /**
@@ -458,10 +473,11 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
      */
     public void gyroTurn(double speed, double angle) {
 
-        double power = 0.1;
+        double power = speed / robot.kMaxLinearSpeed;
         double initialAngle = robot.gyro.getIntegratedZValue();
         double angleRange = angle - initialAngle;
-        long curTime, timeInterval, previousRunTime = 0;
+        long curTime, timeInterval;
+        long lastSpeedCheckTime = 0;
 
         // Notify high priority runner
         robot.targetSpeed = speed;
@@ -472,23 +488,30 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             telemetry.update();
 
             robot.targetSpeed = speed * Math.abs((robot.gyro.getIntegratedZValue() - angle) / angleRange);
-            if (robot.targetSpeed < robot.kMinTurnSpeed) {
-                robot.targetSpeed = robot.kMinTurnSpeed;
+            if (robot.targetSpeed < robot.MIN_TURN_SPEED) {
+                robot.targetSpeed = robot.MIN_TURN_SPEED;
             }
 
             curTime = System.currentTimeMillis();
-            timeInterval = curTime - previousRunTime;
-
-            if (timeInterval >= 50) {
-                // Monitor speed and adjust power if necessary
+            timeInterval = curTime - lastSpeedCheckTime;
+            if (timeInterval > robot.SPEED_CHECK_INTERVAL) {
                 if (robot.currentSpeed < robot.targetSpeed) {
-                    power += POWER_ADJ_STEP;
+                    power += robot.POWER_ADJ_STEP;
                 } else if (robot.currentSpeed > robot.targetSpeed) {
-                    power -= POWER_ADJ_STEP;
+                    power -= robot.POWER_ADJ_STEP;
                 }
+
+                power = Range.clip(power, 0.0, 1.0);
+                lastSpeedCheckTime = curTime;
+
+                System.out.printf("target angle=%.2f, curAngle=%d, power=%.2f, speed=%.2f",
+                        angle,
+                        robot.gyro.getIntegratedZValue(),
+                        power,
+                        robot.currentSpeed);
             }
 
-            previousRunTime = curTime;
+            robot.opModeLiveCheck = 1;
         }
 
         robot.targetSpeed = 0;
@@ -561,7 +584,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
      * @return
      */
     public double getSteer(double error, double PCoeff) {
-        return Range.clip(error * PCoeff, -1, 1);
+        return clip(error * PCoeff, -1, 1);
     }
 
     public boolean UltraSonicReachTheWall(double speed,
@@ -576,7 +599,9 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         double leftPower;
         double rightPower;
         double ultraSoundLevel, targetUS_Level;
-        double power = 0.1;
+        double power = speed / robot.kMaxLinearSpeed;
+        long curTime, timeInterval;
+        long lastSpeedCheckTime = 0;
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
@@ -636,10 +661,10 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                 leftPower = power - steer;
                 rightPower = power + steer;
 
-                leftPower = Range.clip(leftPower,
+                leftPower = clip(leftPower,
                         power - Math.abs(robot.maxLeftRightSpeedDifferentialAtDrive * power),
                         power + Math.abs(robot.maxLeftRightSpeedDifferentialAtDrive * power));
-                rightPower = Range.clip(rightPower,
+                rightPower = clip(rightPower,
                         power - Math.abs(robot.maxLeftRightSpeedDifferentialAtDrive * power),
                         power + Math.abs(robot.maxLeftRightSpeedDifferentialAtDrive * power));
 
@@ -680,13 +705,21 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                 }
 
                 // Monitor speed and adjust power if necessary
-                if (robot.currentSpeed < robot.targetSpeed) {
-                    power += POWER_ADJ_STEP;
-                } else if (robot.currentSpeed > robot.targetSpeed) {
-                    power -= POWER_ADJ_STEP;
+                curTime = System.currentTimeMillis();
+                timeInterval = curTime - lastSpeedCheckTime;
+                if (timeInterval > robot.SPEED_CHECK_INTERVAL) {
+                    if (robot.currentSpeed < robot.targetSpeed) {
+                        power += POWER_ADJ_STEP;
+                    } else if (robot.currentSpeed > robot.targetSpeed) {
+                        power -= POWER_ADJ_STEP;
+                    }
+
+                    power = Range.clip(power, 0.0, 1.0);
+
+                    lastSpeedCheckTime = curTime;
                 }
 
-                sleep(50);
+                robot.opModeLiveCheck = 1;
             }
 
             // Turn off RUN_TO_POSITION
@@ -713,18 +746,28 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                                         double distance,
                                         boolean bLineDetection) {
         long curTime, timeInterval;
-        long previousRunTime = 0;
+        long previousRunTime = 0, lastSpeedCheckTime = 0;
         int newLeftTarget;
         int newRightTarget;
         int moveCounts;
         double targetWallDistance;
-        double power = 0.1;
-        int expectedRunInterval = 50; // ms
+        double power = speed / robot.kMaxLinearSpeed;
+        int expectedRunInterval = 10; // ms
+        double error, lastErr = 0;
+        double steer = 0.0;
+        double leftPower;
+        double rightPower;
+        double ultraSoundLevel, angleOffset;
+        double targetAngleOffset, angleSteer;
+        double minPower, maxPower;
+        double lastLeftPower = 0.0, lastRightPower = 0.0;
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
             robot.targetSpeed = speed;
+            HighPriorityRunner.bLineDetection = bLineDetection;
+            robot.maxLineBrightnessReading = 0;
 
             // reset encoder
             robot.LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -756,12 +799,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             robot.LeftMotor.setPower(power);
             robot.RightMotor.setPower(power);
 
-            // kick off the high priority thread for wall tracking/line detection
-            HighPriorityRunner.SetWallTrackingAndLineDetection(true,
-                    bLineDetection,
-                    power,
-                    distance,
-                    targetWallDistance);
+            lastLeftPower = power;
+            lastRightPower = power;
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
@@ -786,23 +825,161 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                     break;
                 }
 
-                // the rest of this critical task is in high priority thread to avoid time lagging
+                minPower = -Math.abs(power);
+                maxPower = Math.abs(power);
 
-                // Check if high priority thread finishes its job (line detected)
-                if (HighPriorityRunner.bWallTracking == false) {
+                if (distance < 0) {
+                    ultraSoundLevel = robot.ultra_back.getUltrasonicLevel();
+                } else {
+                    ultraSoundLevel = robot.ultra_front.getUltrasonicLevel();
+                }
+
+                error = ultraSoundLevel - targetWallDistance;
+
+                // get angle offset of the wall
+                angleOffset = robot.gyro.getIntegratedZValue();
+
+                ct0++;
+                if (error != lastErr) {
+                    ct0 = 51;
+                }
+
+                lastErr = error;
+
+                if (ct0 > 50) {
+                    ct0 = 0;
+
+                    System.out.println("--Sigma2016-- ultrasoniclevel=" + ultraSoundLevel
+                            + " error=" + error
+                            + " angleOffset=" + angleOffset
+                            + " distance=" + distance);
+                }
+
+                if (ultraSoundLevel == 255) {
+                    // error reading. Ignore.
+                    continue;
+                }
+
+                // adjust angle pointing based on ultrasound reading.
+                if (Math.abs(error) >= 2) {
+                    // distance off by more than 2. Need steep 10 degree angle driving back to expected distance
+                    targetAngleOffset = 0.0 - Math.signum(distance) * Math.signum(error) * 4.0;
+
+                    angleSteer = targetAngleOffset - angleOffset;
+
+                    steer = Math.signum(distance) * angleSteer * 0.04;
+
+                    leftPower = power - steer;
+                    rightPower = power + steer;
+
+                    leftPower = Range.clip(leftPower, minPower, maxPower);
+                    rightPower = Range.clip(rightPower, minPower, maxPower);
+
+                    if (Math.abs(lastLeftPower - leftPower) > 0.01) {
+                        robot.LeftMotor.setPower(leftPower);
+                        lastLeftPower = leftPower;
+                    }
+
+                    if (Math.abs(lastRightPower - rightPower) > 0.01) {
+                        robot.RightMotor.setPower(rightPower);
+                        lastRightPower = rightPower;
+                    }
+
+                    if (ct0 == 0) {
+                        System.out.println("--Sigma2016-- error=" + String.format(Double.toString(error), "%5.2f")
+                                + " leftPower=" + String.format(Double.toString(leftPower), "%5.2f")
+                                + " rightPower=" + String.format(Double.toString(rightPower), "%5.2f")
+                                + " curAngle=" + angleOffset
+                                + " targetAngle=" + targetAngleOffset);
+                    }
+                } else if (Math.abs(error) >= 1) {
+
+                    // distance off by 1. Need mild angle driving back to expected distance
+                    // 3.0 is the expected front/back ultrasound sensor difference
+                    targetAngleOffset = 0.0 - Math.signum(distance) * Math.signum(error) * 2.0;
+
+                    angleSteer = targetAngleOffset - angleOffset;
+
+                    steer = Math.signum(distance) * angleSteer * 0.02;
+
+                    leftPower = power - steer;
+                    rightPower = power + steer;
+
+                    leftPower = Range.clip(leftPower, minPower, maxPower);
+                    rightPower = Range.clip(rightPower, minPower, maxPower);
+
+                    if (Math.abs(lastLeftPower - leftPower) > 0.01) {
+                        robot.LeftMotor.setPower(leftPower);
+                        lastLeftPower = leftPower;
+                    }
+
+                    if (Math.abs(lastRightPower - rightPower) > 0.01) {
+                        robot.RightMotor.setPower(rightPower);
+                        lastRightPower = rightPower;
+                    }
+
+                    if (ct0 == 0) {
+                        System.out.println("--Sigma2016-- error=" + String.format(Double.toString(error), "%5.2f")
+                                + " leftPower=" + String.format(Double.toString(leftPower), "%5.2f")
+                                + " rightPower=" + String.format(Double.toString(rightPower), "%5.2f")
+                                + " curAngle=" + angleOffset
+                                + " targetAngle=" + targetAngleOffset);
+                    }
+                } else {
+
+                    // distance on target. Need to keep 0 angle offset
+                    // 3.0 is the expected front/back ultrasound sensor difference
+                    targetAngleOffset = 0.0;
+
+                    angleSteer = targetAngleOffset - angleOffset;
+
+                    steer = Math.signum(distance) * angleSteer * 0.04;
+
+                    leftPower = power - steer;
+                    rightPower = power + steer;
+
+                    leftPower = Range.clip(leftPower, minPower, maxPower);
+                    rightPower = Range.clip(rightPower, minPower, maxPower);
+
+                    if (Math.abs(lastLeftPower - leftPower) > 0.01) {
+                        robot.LeftMotor.setPower(leftPower);
+                        lastLeftPower = leftPower;
+                    }
+
+                    if (Math.abs(lastRightPower - rightPower) > 0.01) {
+                        robot.RightMotor.setPower(rightPower);
+                        lastRightPower = rightPower;
+                    }
+
+                    if (ct0 == 0) {
+                        System.out.println("--Sigma2016-- error=" + String.format(Double.toString(error), "%5.2f")
+                                + " leftPower=" + String.format(Double.toString(leftPower), "%5.2f")
+                                + " rightPower=" + String.format(Double.toString(rightPower), "%5.2f")
+                                + " curAngle=" + angleOffset
+                                + " targetAngle=" + targetAngleOffset);
+                    }
+                }
+
+                // Monitor speed and adjust power if necessary
+                if (curTime - lastSpeedCheckTime > robot.SPEED_CHECK_INTERVAL) {
+                    if (robot.currentSpeed < robot.targetSpeed) {
+                        power += robot.POWER_ADJ_STEP;
+                    } else if (robot.currentSpeed > robot.targetSpeed) {
+                        power -= robot.POWER_ADJ_STEP;
+                    }
+
+                    power = Range.clip(power, 0.0, 1.0);
+                }
+
+                if (robot.maxLineBrightnessReading > robot.groundbrightnessAVG * robot.CENTER_LIGHT_THRESH) {
+                    System.out.println("Sigma2016 ---> Ground Brightness:: " + robot.groundbrightnessAVG
+                            + " DETECTED Light Level:: " + robot.maxLineBrightnessReading);
+
                     break;
                 }
 
-                // sleep for sometime
-                sleep(expectedRunInterval);
+                robot.opModeLiveCheck = 1;
             }
-
-            // stop the high priority thread for wall tracking/line detection
-            HighPriorityRunner.SetWallTrackingAndLineDetection(false,
-                    false,
-                    0,
-                    0,
-                    0);
         }
 
         // Turn off RUN_TO_POSITION
@@ -810,6 +987,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         robot.RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         robot.targetSpeed = 0;
+        HighPriorityRunner.bLineDetection = false;
+        robot.maxLineBrightnessReading = 0;
     }
 
     // detect the color and push the blue button.
@@ -884,6 +1063,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                 System.out.println("--Sigma2016-- blue light detected and blue button pushed. blueCheck=" + blueCheck + " redCheck=" + redCheck);
                 break;
             }
+
+            robot.opModeLiveCheck = 1;
 
             sleep(10);
             idle();

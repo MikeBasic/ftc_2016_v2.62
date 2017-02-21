@@ -824,15 +824,6 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
             speed = Range.clip(Math.abs(speed), 0.0, 1.0);
             robot.LeftMotor.setPower(speed);
             robot.RightMotor.setPower(speed);
-//            robot.backRightMotor.setPower(speed);
-//            robot.backLeftMotor.setPower(speed);
-
-            // kick off the high priority thread for wall tracking/line detection
-            HighPriorityRunner.SetWallTrackingAndLineDetection(true,
-                    bLineDetection,
-                    speed,
-                    distance,
-                    targetWallDistance);
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
@@ -856,25 +847,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
                         - robot.RightMotor.getTargetPosition()) <= robot.ENCODER_TARGET_THRESHOLD) {
                     break;
                 }
-
-                // the rest of this critical task is in high priority thread to avoid time lagging
-
-                // Check if high priority thread finishes its job (line detected)
-                if (HighPriorityRunner.bWallTracking == false)
-                {
-                    break;
-                }
-
-                // sleep for sometime
-                sleep(expectedRunInterval);
-                    }
-
-            // stop the high priority thread for wall tracking/line detection
-            HighPriorityRunner.SetWallTrackingAndLineDetection(false,
-                    false,
-                    0,
-                    0,
-                    0);
+            }
         }
 
         // Turn off RUN_TO_POSITION

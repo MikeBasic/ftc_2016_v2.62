@@ -36,7 +36,8 @@ public class HardwareSigma2016
     public int groundbrightness_test2=0;
     public int groundbrightness_test3=0;
     public int groundbrightnessAVG = 0;
-    public final double CENTER_LIGHT_THRESH = 3.0;
+    public final double CENTER_LIGHT_THRESH = 2.0;
+    public int maxLineBrightnessReading = 0;
 
     // speed
     public static final double kMaxLinearSpeed = 32.0; // inch per second
@@ -44,13 +45,19 @@ public class HardwareSigma2016
     public double targetSpeed = 0;      // inch per second
     public double currentAngleSpeed = 0; // degree per second
     public double currentSpeed = 0;     // inch per second
-    public static final double P_DRIVE_COEFF = 0.05;     // Larger is more responsive, but also less stable
+    public static final double P_DRIVE_COEFF = 0.015;     // Larger is more responsive, but also less stable
 
     public static final double TURN_THRESHOLD = 2;      // As tight as we can make it with an integer gyro
     public static final double maxLeftRightSpeedDifferentialAtDrive = 0.5;
     public static final double P_WALL_APPROACHING_COEFF = 0.05;
 
-    public static final double POWER_ADJ_STEP = 0.1;
+    public static final double MIN_TURN_SPEED = 3.2; // inch per second
+    public static final int ENCODER_TARGET_THRESHOLD = 10;
+    public static final double POWER_ADJ_STEP = 0.01;
+    public static final double SPEED_HYSTERESIS_RANGE = 0.2;
+
+    public static final int SPEED_CHECK_INTERVAL = 50;
+
     /* Public OpMode members. */
     public DcMotor  LeftMotor = null;
     public DcMotor  RightMotor = null;
@@ -71,12 +78,11 @@ public class HardwareSigma2016
     public static final double PUSHER_R_OUT  =  0.0 ;
     public static final double PUSHER_STOP = 0.5;
     public static final double STORAGE_DOWN = 0.3;
-    public static final double STORAGE_UP = 0.1;
+    public static final double STORAGE_UP = 0.05;
     public static double manualDownCapPower = -0.4;
     public static double manualUpCapPower = 0.4;
 
-    public static final double kMinTurnSpeed = 1.0; // inch per second
-    public static final int ENCODER_TARGET_THRESHOLD = 10;
+    public int opModeLiveCheck = 1;
 
     ModernRoboticsI2cGyro gyro = null;
 
@@ -98,6 +104,15 @@ public class HardwareSigma2016
         RightMotor  = hwMap.dcMotor.get("RightMotor");
 
         flicker = hwMap.dcMotor.get("flicker");
+        // get flicker ready
+        flicker.setPower(-1.0);
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        flicker.setPower(0.0);
+
         intake = hwMap.dcMotor.get("intake");
 
         CapLifter = hwMap.dcMotor.get("CapLift"); //hi my name is bob and I like pie
@@ -112,13 +127,16 @@ public class HardwareSigma2016
         // Define and initialize ALL installed servos.
         pusherL = hwMap.servo.get("pusher_l");
         pusherR = hwMap.servo.get("pusher_r");
-        Storage = hwMap.servo.get("Storage");
-        Storage.setPosition(STORAGE_DOWN);
         pusherL.setPosition(PUSHER_L_IN);
         pusherR.setPosition(PUSHER_R_IN);
         Thread.sleep(1500);
         pusherL.setPosition(PUSHER_STOP);
         pusherR.setPosition(PUSHER_STOP);
+
+        Storage = hwMap.servo.get("Storage");
+        Storage.setPosition(STORAGE_UP/2);
+        Thread.sleep(500);
+        Storage.setPosition(STORAGE_DOWN);
 
         // gyro
         gyro = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("gyro");
