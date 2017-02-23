@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.POWER_ADJ_STEP;
+import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_STOP;
 
 public class HighPriorityRunnerSigma2016 extends Thread {
 
@@ -99,6 +100,15 @@ public class HighPriorityRunnerSigma2016 extends Thread {
                     robot.maxLineBrightnessReading = lightlevel;
                     System.out.println("Ground Brightness:: " + robot.groundbrightnessAVG
                             + " Light Level:: " + robot.maxLineBrightnessReading);
+                }
+            }
+
+            if (robot.pusherRetractionStartTime > 0) {
+                if (curTime - robot.pusherRetractionStartTime > 1600) {
+                    robot.pusherR.setPosition(robot.PUSHER_STOP);
+                    robot.pusherL.setPosition(robot.PUSHER_STOP);
+
+                    robot.pusherRetractionStartTime = 0;
                 }
             }
 

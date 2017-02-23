@@ -96,11 +96,11 @@ public class New_Linear_Tele_Op extends LinearOpMode{
             up = gamepad2.dpad_up;
             down = gamepad2.dpad_down;
 
-            Storage = gamepad2.dpad_right;
+            //Storage = gamepad2.dpad_right;
 
             capSemiAuto = gamepad2.right_stick_button;
             emergencyCapBreak = gamepad2.left_stick_button;
-            capUp = gamepad2.right_bumper;
+            Storage = gamepad2.right_bumper;
             capDown = gamepad2.left_bumper;
             capFaster = gamepad2.b;
             capSlower = gamepad2.x;
@@ -179,7 +179,10 @@ public class New_Linear_Tele_Op extends LinearOpMode{
                 //beaconL.setPosition(0.5);
             }*/
 
-            if(capSemiAuto)
+            beaconL.setPosition(0.5);
+            beaconR.setPosition(0.5);
+
+            /*if(capSemiAuto)
             {
                 //motor moves
                 capSemiAuto(-52, 0.6);
@@ -199,7 +202,7 @@ public class New_Linear_Tele_Op extends LinearOpMode{
             }
             else{
                 CapLift.setPower(0.0);
-            }
+            }*/
 
             if(capFaster) {
                 robot.manualDownCapPower += 0.1;

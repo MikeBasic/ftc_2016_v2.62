@@ -10,9 +10,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import static android.R.attr.max;
-import static org.firstinspires.ftc.teamcode.RedNearAutoOpSigma2016.P_WALL_APPROACHING_COEFF;
-
 /**
  * This is NOT an opmode.
  *
@@ -36,7 +33,7 @@ public class HardwareSigma2016
     public int groundbrightness_test2=0;
     public int groundbrightness_test3=0;
     public int groundbrightnessAVG = 0;
-    public final double CENTER_LIGHT_THRESH = 2.0;
+    public final double CENTER_LIGHT_THRESH = 2.5;
     public int maxLineBrightnessReading = 0;
 
     // speed
@@ -51,12 +48,12 @@ public class HardwareSigma2016
     public static final double maxLeftRightSpeedDifferentialAtDrive = 0.5;
     public static final double P_WALL_APPROACHING_COEFF = 0.05;
 
-    public static final double MIN_TURN_SPEED = 3.2; // inch per second
+    public static final double MIN_TURN_SPEED = 1.6; // inch per second
     public static final int ENCODER_TARGET_THRESHOLD = 10;
     public static final double POWER_ADJ_STEP = 0.01;
     public static final double SPEED_HYSTERESIS_RANGE = 0.2;
 
-    public static final int SPEED_CHECK_INTERVAL = 50;
+    public static final int SPEED_CHECK_INTERVAL = 100;
 
     /* Public OpMode members. */
     public DcMotor  LeftMotor = null;
@@ -72,15 +69,17 @@ public class HardwareSigma2016
     public UltrasonicSensor ultra_front = null;
     public UltrasonicSensor ultra_back = null;
 
-    public static final double PUSHER_L_IN  =  0.0 ;
-    public static final double PUSHER_R_IN  =  1.0 ;
-    public static final double PUSHER_L_OUT  =  1.0 ;
-    public static final double PUSHER_R_OUT  =  0.0 ;
+    public static final double PUSHER_L_IN  =  1.0 ;
+    public static final double PUSHER_R_IN  =  0.0 ;
+    public static final double PUSHER_L_OUT  =  0.0 ;
+    public static final double PUSHER_R_OUT  =  1.0 ;
     public static final double PUSHER_STOP = 0.5;
     public static final double STORAGE_DOWN = 0.3;
     public static final double STORAGE_UP = 0.05;
     public static double manualDownCapPower = -0.4;
     public static double manualUpCapPower = 0.4;
+
+    public long pusherRetractionStartTime = 0;
 
     public int opModeLiveCheck = 1;
 
