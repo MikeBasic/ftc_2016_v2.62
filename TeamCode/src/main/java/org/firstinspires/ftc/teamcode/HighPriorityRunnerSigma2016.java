@@ -42,7 +42,7 @@ public class HighPriorityRunnerSigma2016 extends Thread {
         rightSpeed = Math.abs(rightEncoderPosition - lastRightEncoderPosition) / (double) timeDelta;
 
         // calculate current speed -- unit inch per second
-        robot.currentSpeed = Math.max(leftSpeed, rightSpeed) * 1000 / robot.COUNTS_PER_INCH;  // inch per second
+        robot.currentSpeed = Math.max(leftSpeed, rightSpeed) * 1000.0 / robot.COUNTS_PER_INCH;  // inch per second
 
 //        System.out.println(leftEncoderPosition + "-" + lastLeftEncoderPosition + "=" + leftSpeed);
 //        System.out.println(rightEncoderPosition + "-" + lastRightEncoderPosition + "=" + rightSpeed);

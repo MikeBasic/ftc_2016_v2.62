@@ -84,7 +84,7 @@ import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_STOP;
 public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
     static final double TARGET_WALL_DISTANCE_FORWARD = 8;  // ultrasound sensor reading for x inch away from wall
-    static final double TARGET_WALL_DISTANCE_BACKWARD = 9;
+    static final double TARGET_WALL_DISTANCE_BACKWARD = 10;
 
     static final int RED_TRESHOLD = 5;
     static final int BLUE_TRESHOLD = 5;
@@ -152,9 +152,9 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // move forward
-        gyroDrive(0.9 * robot.kMaxLinearSpeed,  // speed
+        gyroDrive(0.4 * robot.kMaxLinearSpeed,  // speed
                 9.0,   // distance
-                -25.0);// angle
+                -15.0);// angle
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -189,7 +189,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 //        }
 
         // Drive toward beacons
-        gyroDrive(0.9 * robot.kMaxLinearSpeed,  // speed
+        gyroDrive(1.0 * robot.kMaxLinearSpeed,  // speed
                 63,   // distance
                 -40.0);// angle
         StopAllMotion();
@@ -198,7 +198,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             return;
         }
 
-        gyroTurn(0.2 * robot.kMaxLinearSpeed, // turn speed
+        gyroTurn(0.6 * robot.kMaxLinearSpeed, // turn speed
                 -15.0); // target heading
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -207,7 +207,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         UltraSonicReachTheWall(0.5 * robot.kMaxLinearSpeed, //speed
-                60, //distance
+                30, //distance
                 -15.0); //angle (absolute)
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -232,8 +232,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
         /* ------ ultrasonic wall tracker + white line detection ------- */
         // Drive forward to align with the wall and park at far line
-        WallTrackingToWhiteLine(0.35 * robot.kMaxLinearSpeed, //speed
-                50, //distance
+        WallTrackingToWhiteLine(0.4 * robot.kMaxLinearSpeed, //speed
+                43, //distance
                 true); //line tracking
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -271,7 +271,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         // detect the near white line
-        WallTrackingToWhiteLine(0.25 * robot.kMaxLinearSpeed, //speed
+        WallTrackingToWhiteLine(0.3 * robot.kMaxLinearSpeed, //speed
                 -13.0, //distance
                 true); //color detection
         StopAllMotion();
@@ -298,7 +298,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         /*------ drive to the center vortex ------*/
-        gyroDrive(0.9 * robot.kMaxLinearSpeed, //speed
+        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
                 35.00, // distance
                 110); // angle
         StopAllMotion();
@@ -315,7 +315,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             return;
         }
 
-        gyroDrive(0.9 * robot.kMaxLinearSpeed, //speed
+        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
                 38, //distance
                 110);  //angle
         StopAllMotion();
@@ -973,10 +973,22 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
 
                 // Monitor speed and adjust power if necessary
                 if (curTime - lastSpeedCheckTime > robot.SPEED_CHECK_INTERVAL) {
-                    if (robot.currentSpeed < robot.targetSpeed) {
-                        power += powerAdjustingStepUp;
-                    } else if (robot.currentSpeed > robot.targetSpeed) {
-                        power -= powerAdjustingStepDown;
+
+                    if (Math.abs(robot.targetSpeed) >= 0.1 * robot.kMaxLinearSpeed) {
+                        if (robot.currentSpeed < robot.targetSpeed) {
+                            power += powerAdjustingStepUp;
+                        } else if (robot.currentSpeed > robot.targetSpeed) {
+                            power -= powerAdjustingStepDown;
+                        }
+                    }
+                    else
+                    {
+                        // Only increase power when robot does not move
+                        if (robot.currentSpeed < 0.8) {
+                            power += powerAdjustingStepUp;
+                        } else if (robot.currentSpeed > robot.targetSpeed) {
+                            power -= powerAdjustingStepDown;
+                        }
                     }
 
                     power = Range.clip(power, 0.0, 1.0);

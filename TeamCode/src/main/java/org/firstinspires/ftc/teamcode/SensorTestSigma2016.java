@@ -33,6 +33,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,7 +51,7 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name = "Sensors", group = "Sigma6710")
-//@Disabled
+@Disabled
 public class SensorTestSigma2016 extends LinearOpMode {
 
     ColorSensor beacon_color = null;  // Hardware Device Object

@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name = "MotorTest", group = "Sigma6710")
-//@Disabled
+@Disabled
 public class MotorTestSigma2016 extends LinearOpMode {
 
     HardwareSigma2016 robot = null;

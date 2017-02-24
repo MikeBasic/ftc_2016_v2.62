@@ -80,9 +80,9 @@ import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_STOP;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Red Near Auto Op Sigma 2016", group = "Sigma6710")
+@Autonomous(name = "Red Corner", group = "Sigma6710")
 //@Disabled
-public class RedNearAutoOpSigma2016 extends LinearOpMode {
+public class RedCorner extends LinearOpMode {
 
     static final double TARGET_WALL_DISTANCE_FORWARD = 10;  // ultrasound sensor reading for x inch away from wall
     static final double TARGET_WALL_DISTANCE_BACKWARD = 9;
@@ -299,31 +299,31 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         /*------ drive to the center vortex ------*/
-        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
-                -35.00, // distance
-                -300); // angle
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            HighPriorityRunner.go = false;
-            return;
-        }
-
-        gyroTurn(0.6 * robot.kMaxLinearSpeed, //speed
-                -300);  //angle
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            HighPriorityRunner.go = false;
-            return;
-        }
-        
-        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
-                -38, //distance
-                -300);  //angle
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            HighPriorityRunner.go = false;
-            return;
-        }
+//        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
+//                -35.00, // distance
+//                -300); // angle
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            HighPriorityRunner.go = false;
+//            return;
+//        }
+//
+//        gyroTurn(0.6 * robot.kMaxLinearSpeed, //speed
+//                -180);  //angle
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            HighPriorityRunner.go = false;
+//            return;
+//        }
+//
+//        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
+//                62, //distance
+//                -180);  //angle
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            HighPriorityRunner.go = false;
+//            return;
+//        }
 
         // Finally, quit high priority thread
         HighPriorityRunner.go = false;
@@ -496,7 +496,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
             robot.targetSpeed = speed * Math.abs((robot.gyro.getIntegratedZValue() - angle) / angleRange);
             if (robot.targetSpeed < robot.MIN_TURN_SPEED) {
                 robot.targetSpeed = robot.MIN_TURN_SPEED;
-        }
+            }
             powerAdjustingStepUp = robot.targetSpeed / robot.kMaxLinearSpeed / 10.0;
             powerAdjustingStepDown = robot.targetSpeed / robot.kMaxLinearSpeed / 3.0;
 
@@ -507,7 +507,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
                     power += powerAdjustingStepUp;
                 } else if (robot.currentSpeed > robot.targetSpeed) {
                     power -= powerAdjustingStepDown;
-    }
+                }
 
                 power = Range.clip(power, 0.0, 1.0);
                 lastSpeedCheckTime = curTime;
@@ -553,7 +553,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         } else {
             rightPower = power * Math.signum(error);
             leftPower = -rightPower;
-            }
+        }
 
         // Send desired power to motors.
         robot.LeftMotor.setPower(leftPower);

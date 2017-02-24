@@ -44,7 +44,6 @@ import static com.qualcomm.robotcore.util.Range.clip;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.POWER_ADJ_STEP;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_L_IN;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_L_OUT;
-import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_R_IN;
 import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_STOP;
 
 /**
@@ -80,12 +79,12 @@ import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_STOP;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Red Near Auto Op Sigma 2016", group = "Sigma6710")
+@Autonomous(name = "Blue Corner", group = "Sigma6710")
 //@Disabled
-public class RedNearAutoOpSigma2016 extends LinearOpMode {
+public class BlueCorner extends LinearOpMode {
 
-    static final double TARGET_WALL_DISTANCE_FORWARD = 10;  // ultrasound sensor reading for x inch away from wall
-    static final double TARGET_WALL_DISTANCE_BACKWARD = 9;
+    static final double TARGET_WALL_DISTANCE_FORWARD = 8;  // ultrasound sensor reading for x inch away from wall
+    static final double TARGET_WALL_DISTANCE_BACKWARD = 10;
 
     static final int RED_TRESHOLD = 5;
     static final int BLUE_TRESHOLD = 5;
@@ -103,7 +102,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
-        System.out.println("--RedNear log@" + currentDateTimeString + "--");
+        System.out.println("--BlueNear log@" + currentDateTimeString + "--");
 
         /* -------- initializations ---------- */
         /*
@@ -155,7 +154,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         // move forward
         gyroDrive(0.4 * robot.kMaxLinearSpeed,  // speed
                 9.0,   // distance
-                -5.0);// angle
+                -15.0);// angle
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -180,27 +179,27 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         sleep(800);
         robot.flicker.setPower(0);
 
-        // turn toward beacons backward
-        gyroTurn(0.6 * robot.kMaxLinearSpeed, // turn speed
-                -130.0); // target heading
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            HighPriorityRunner.go = false;
-            return;
-        }
+//        // turn toward beacons
+//        gyroTurn(0.5 * robot.kMaxLinearSpeed, // turn speed
+//                -40.0); // target heading
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            HighPriorityRunner.go = false;
+//            return;
+//        }
 
         // Drive toward beacons
         gyroDrive(1.0 * robot.kMaxLinearSpeed,  // speed
-                -76,   // distance
-                -133.0);// angle
+                63,   // distance
+                -40.0);// angle
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
             return;
         }
 
-        gyroTurn(0.5 * robot.kMaxLinearSpeed, // turn speed
-                -165.0); // target heading
+        gyroTurn(0.6 * robot.kMaxLinearSpeed, // turn speed
+                -15.0); // target heading
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -208,8 +207,8 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         UltraSonicReachTheWall(0.5 * robot.kMaxLinearSpeed, //speed
-                -30, //distance
-                -165.0); //angle (absolute)
+                30, //distance
+                -15.0); //angle (absolute)
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -220,7 +219,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         robot.groundbrightness_test2 = robot.lineLightSensor.red() + robot.lineLightSensor.green() + robot.lineLightSensor.blue();
 
         gyroTurn(0.3 * robot.kMaxLinearSpeed, //speed
-                -175.0); //angle
+                -5.0); //angle
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -233,8 +232,8 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
 
         /* ------ ultrasonic wall tracker + white line detection ------- */
         // Drive forward to align with the wall and park at far line
-        WallTrackingToWhiteLine(0.3 * robot.kMaxLinearSpeed, //speed
-                -43, //distance
+        WallTrackingToWhiteLine(0.4 * robot.kMaxLinearSpeed, //speed
+                43, //distance
                 true); //line tracking
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -243,7 +242,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         WallTrackingToWhiteLine(0.08 * robot.kMaxLinearSpeed, //speed
-                18, //distance
+                -18, //distance
                 true); //line detection
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -262,7 +261,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         // Drive backward to detect the near line
         // pass the current white line without line detection
         WallTrackingToWhiteLine(0.5 * robot.kMaxLinearSpeed, //speed
-                40.0, //distance
+                -40.0, //distance
                 false); //line detection
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -272,8 +271,8 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         // detect the near white line
-        WallTrackingToWhiteLine(0.40 * robot.kMaxLinearSpeed, //speed
-                13.0, //distance
+        WallTrackingToWhiteLine(0.3 * robot.kMaxLinearSpeed, //speed
+                -13.0, //distance
                 true); //color detection
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -282,7 +281,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         WallTrackingToWhiteLine(0.08 * robot.kMaxLinearSpeed, //speed
-                -18.0, //distance
+                18.0, //distance
                 true); //line detection
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -299,31 +298,31 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         }
 
         /*------ drive to the center vortex ------*/
-        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
-                -35.00, // distance
-                -300); // angle
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            HighPriorityRunner.go = false;
-            return;
-        }
-
-        gyroTurn(0.6 * robot.kMaxLinearSpeed, //speed
-                -300);  //angle
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            HighPriorityRunner.go = false;
-            return;
-        }
-        
-        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
-                -38, //distance
-                -300);  //angle
-        StopAllMotion();
-        if (!opModeIsActive()) {
-            HighPriorityRunner.go = false;
-            return;
-        }
+//        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
+//                35.00, // distance
+//                110); // angle
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            HighPriorityRunner.go = false;
+//            return;
+//        }
+//
+//        gyroTurn(0.5 * robot.kMaxLinearSpeed, //speed
+//                0);  //angle
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            HighPriorityRunner.go = false;
+//            return;
+//        }
+//
+//        gyroDrive(1.0 * robot.kMaxLinearSpeed, //speed
+//                -62, //distance
+//                0);  //angle
+//        StopAllMotion();
+//        if (!opModeIsActive()) {
+//            HighPriorityRunner.go = false;
+//            return;
+//        }
 
         // Finally, quit high priority thread
         HighPriorityRunner.go = false;
@@ -496,7 +495,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
             robot.targetSpeed = speed * Math.abs((robot.gyro.getIntegratedZValue() - angle) / angleRange);
             if (robot.targetSpeed < robot.MIN_TURN_SPEED) {
                 robot.targetSpeed = robot.MIN_TURN_SPEED;
-        }
+            }
             powerAdjustingStepUp = robot.targetSpeed / robot.kMaxLinearSpeed / 10.0;
             powerAdjustingStepDown = robot.targetSpeed / robot.kMaxLinearSpeed / 3.0;
 
@@ -507,7 +506,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
                     power += powerAdjustingStepUp;
                 } else if (robot.currentSpeed > robot.targetSpeed) {
                     power -= powerAdjustingStepDown;
-    }
+                }
 
                 power = Range.clip(power, 0.0, 1.0);
                 lastSpeedCheckTime = curTime;
@@ -529,9 +528,9 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
      * Perform one cycle of closed loop heading control.
      *
      * @param power Desired speed of turn.
-     * @param angle  Absolute Angle (in Degrees) relative to last gyro reset.
-     *               0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *               If a relative angle is required, add/subtract from current heading.
+     * @param angle Absolute Angle (in Degrees) relative to last gyro reset.
+     *              0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
+     *              If a relative angle is required, add/subtract from current heading.
      * @return
      */
     boolean onHeading(double power, double angle) {
@@ -553,7 +552,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         } else {
             rightPower = power * Math.signum(error);
             leftPower = -rightPower;
-            }
+        }
 
         // Send desired power to motors.
         robot.LeftMotor.setPower(leftPower);
@@ -875,7 +874,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
                 // adjust angle pointing based on ultrasound reading.
                 if (Math.abs(error) >= 2) {
                     // distance off by more than 2. Need steep 10 degree angle driving back to expected distance
-                    targetAngleOffset = -180 - Math.signum(distance) * Math.signum(error) * 4.0;
+                    targetAngleOffset = 0.0 - Math.signum(distance) * Math.signum(error) * 4.0;
 
                     angleSteer = targetAngleOffset - angleOffset;
 
@@ -908,7 +907,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
 
                     // distance off by 1. Need mild angle driving back to expected distance
                     // 3.0 is the expected front/back ultrasound sensor difference
-                    targetAngleOffset = -180 - Math.signum(distance) * Math.signum(error) * 2.0;
+                    targetAngleOffset = 0.0 - Math.signum(distance) * Math.signum(error) * 2.0;
 
                     angleSteer = targetAngleOffset - angleOffset;
 
@@ -941,7 +940,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
 
                     // distance on target. Need to keep 0 angle offset
                     // 3.0 is the expected front/back ultrasound sensor difference
-                    targetAngleOffset = -180.0;
+                    targetAngleOffset = 0.0;
 
                     angleSteer = targetAngleOffset - angleOffset;
 
@@ -1015,7 +1014,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
         robot.maxLineBrightnessReading = 0;
     }
 
-    // detect the color and push the red button.
+    // detect the color and push the blue button.
     public void ColorDetectionAndButtonPushing() {
 
         ElapsedTime holdTimer = new ElapsedTime();
@@ -1054,24 +1053,7 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
             // red color detected
             if (redCheck > RED_TRESHOLD) {
 
-                // We are red team
-                robot.pusherL.setPosition(robot.PUSHER_L_OUT);
-                //wait servo to finish
-                sleep(1600);
-
-                // Retrieve the pusher
-                robot.pusherL.setPosition(robot.PUSHER_L_IN);
-                robot.pusherRetractionStartTime = System.currentTimeMillis();
-                sleep(300);
-
-                System.out.println("--Sigma2016-- red light detected and red button pushed. redCheck=" + redCheck + " blueCheck=" + blueCheck);
-                break;
-            }
-
-            // blue color detected
-            if (blueCheck > BLUE_TRESHOLD) {
-
-                // We are the blue team
+                // We are blue team
                 robot.pusherR.setPosition(robot.PUSHER_R_OUT);
                 //wait servo to finish
                 sleep(1600);
@@ -1081,7 +1063,24 @@ public class RedNearAutoOpSigma2016 extends LinearOpMode {
                 robot.pusherRetractionStartTime = System.currentTimeMillis();
                 sleep(300);
 
-                System.out.println("--Sigma2016-- blue light detected and red button pushed. blueCheck=" + blueCheck + " redCheck=" + redCheck);
+                System.out.println("--Sigma2016-- red light detected and blue button pushed. redCheck=" + redCheck + " blueCheck=" + blueCheck);
+                break;
+            }
+
+            // blue color detected
+            if (blueCheck > BLUE_TRESHOLD) {
+
+                // We are the blue team
+                robot.pusherL.setPosition(PUSHER_L_OUT);
+                //wait servo to finish
+                sleep(1600);
+
+                // Retrieve the pusher
+                robot.pusherL.setPosition(PUSHER_L_IN);
+                robot.pusherRetractionStartTime = System.currentTimeMillis();
+                sleep(300);
+
+                System.out.println("--Sigma2016-- blue light detected and blue button pushed. blueCheck=" + blueCheck + " redCheck=" + redCheck);
                 break;
             }
 
