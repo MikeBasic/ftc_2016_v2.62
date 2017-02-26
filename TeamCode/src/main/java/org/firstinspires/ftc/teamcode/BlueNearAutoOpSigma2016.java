@@ -198,7 +198,7 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
             return;
         }
 
-        gyroTurn(0.6 * robot.kMaxLinearSpeed, // turn speed
+        gyroTurn(0.4 * robot.kMaxLinearSpeed, // turn speed
                 -15.0); // target heading
         StopAllMotion();
         if (!opModeIsActive()) {
@@ -984,10 +984,8 @@ public class BlueNearAutoOpSigma2016 extends LinearOpMode {
                     else
                     {
                         // Only increase power when robot does not move
-                        if (robot.currentSpeed < 0.8) {
-                            power += powerAdjustingStepUp;
-                        } else if (robot.currentSpeed > robot.targetSpeed) {
-                            power -= powerAdjustingStepDown;
+                        if (speed <= 0.09 * robot.kMaxLinearSpeed) {
+                            power = 0.13;
                         }
                     }
 

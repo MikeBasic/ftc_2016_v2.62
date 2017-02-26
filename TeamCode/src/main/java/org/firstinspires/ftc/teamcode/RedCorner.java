@@ -85,7 +85,7 @@ import static org.firstinspires.ftc.teamcode.HardwareSigma2016.PUSHER_STOP;
 public class RedCorner extends LinearOpMode {
 
     static final double TARGET_WALL_DISTANCE_FORWARD = 10;  // ultrasound sensor reading for x inch away from wall
-    static final double TARGET_WALL_DISTANCE_BACKWARD = 9;
+    static final double TARGET_WALL_DISTANCE_BACKWARD = 8;
 
     static final int RED_TRESHOLD = 5;
     static final int BLUE_TRESHOLD = 5;
@@ -192,7 +192,7 @@ public class RedCorner extends LinearOpMode {
         // Drive toward beacons
         gyroDrive(1.0 * robot.kMaxLinearSpeed,  // speed
                 -76,   // distance
-                -133.0);// angle
+                -130.0);// angle
         StopAllMotion();
         if (!opModeIsActive()) {
             HighPriorityRunner.go = false;
@@ -233,7 +233,7 @@ public class RedCorner extends LinearOpMode {
 
         /* ------ ultrasonic wall tracker + white line detection ------- */
         // Drive forward to align with the wall and park at far line
-        WallTrackingToWhiteLine(0.3 * robot.kMaxLinearSpeed, //speed
+        WallTrackingToWhiteLine(0.4 * robot.kMaxLinearSpeed, //speed
                 -43, //distance
                 true); //line tracking
         StopAllMotion();
@@ -985,10 +985,8 @@ public class RedCorner extends LinearOpMode {
                     else
                     {
                         // Only increase power when robot does not move
-                        if (robot.currentSpeed < 0.8) {
-                            power += powerAdjustingStepUp;
-                        } else if (robot.currentSpeed > robot.targetSpeed) {
-                            power -= powerAdjustingStepDown;
+                        if (speed <= 0.09 * robot.kMaxLinearSpeed) {
+                            power = 0.13;
                         }
                     }
 
@@ -1062,7 +1060,7 @@ public class RedCorner extends LinearOpMode {
                 // Retrieve the pusher
                 robot.pusherL.setPosition(robot.PUSHER_L_IN);
                 robot.pusherRetractionStartTime = System.currentTimeMillis();
-                sleep(300);
+                sleep(1600);
 
                 System.out.println("--Sigma2016-- red light detected and red button pushed. redCheck=" + redCheck + " blueCheck=" + blueCheck);
                 break;
@@ -1079,7 +1077,7 @@ public class RedCorner extends LinearOpMode {
                 // Retrieve the pusher
                 robot.pusherR.setPosition(robot.PUSHER_R_IN);
                 robot.pusherRetractionStartTime = System.currentTimeMillis();
-                sleep(300);
+                sleep(1600);
 
                 System.out.println("--Sigma2016-- blue light detected and red button pushed. blueCheck=" + blueCheck + " redCheck=" + redCheck);
                 break;

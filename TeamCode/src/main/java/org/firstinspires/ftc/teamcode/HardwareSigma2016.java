@@ -33,7 +33,7 @@ public class HardwareSigma2016
     public int groundbrightness_test2=0;
     public int groundbrightness_test3=0;
     public int groundbrightnessAVG = 0;
-    public final double CENTER_LIGHT_THRESH = 2.5;
+    public final double CENTER_LIGHT_THRESH = 3.5;
     public int maxLineBrightnessReading = 0;
 
     // speed
